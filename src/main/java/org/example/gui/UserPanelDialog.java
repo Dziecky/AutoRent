@@ -30,6 +30,7 @@ public class UserPanelDialog {
         userWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4 + 7, 0));
         userWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION, Window.Hint.FIXED_SIZE));
         userWindow.setComponent(userPanel.withBorder(Borders.singleLine()));
+        userWindow.setCloseWindowWithEscape(true);
         textGUI.addWindowAndWait(userWindow);
     }
 

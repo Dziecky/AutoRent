@@ -7,7 +7,6 @@ import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import org.example.sessions.UserSession;
-import org.example.services.AuthenticationService;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 public class MainMenu {
 
     private static Panel mainPanel;
+
     public static void runMainMenu() {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(new TerminalSize(120, 36));
         try (Screen screen = terminalFactory.createScreen()) {
@@ -31,37 +31,8 @@ public class MainMenu {
             mainPanel = new Panel();
             mainPanel.setLayoutManager(new GridLayout(1));
 
-            if (UserSession.getInstance().isAuthenticated()) {
-                Button userPanelButton = new Button(" Zalogowany jako: " + UserSession.getInstance().getUsername(), () -> {
-                    UserPanelDialog.showUserPanelDialog(textGUI);
-                });
-                userPanelButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-                mainPanel.addComponent(userPanelButton);
-            } else {
-                Button loginButton = new Button(" Zaloguj się ", () -> {
-                    LoginDialog.showLoginDialog(textGUI);
-                    if (UserSession.getInstance().isAuthenticated()) {
-                        try {
-                            updateMainMenuWithUserPanel(textGUI);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-                loginButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-                mainPanel.addComponent(loginButton);
-            }
-
-            Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> {
-                MessageDialog.showMessageDialog(textGUI, "Przeglądanie", "Funkcja w budowie");
-            });
-            browseCarsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-            mainPanel.addComponent(browseCarsButton);
-
-
-            Button exitButton = new Button(" Zakończ ", window::close);
-            exitButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-            mainPanel.addComponent(exitButton);
+            // Inicjalizacja głównego menu
+            updateMainMenu(textGUI, window);
 
             window.setComponent(mainPanel.withBorder(Borders.singleLine()));
             textGUI.addWindowAndWait(window);
@@ -70,22 +41,51 @@ public class MainMenu {
         }
     }
 
-    private static void updateMainMenuWithUserPanel(WindowBasedTextGUI textGUI) throws IOException {
+    private static void updateMainMenu(WindowBasedTextGUI textGUI, BasicWindow window) throws IOException {
         mainPanel.removeAllComponents();
 
-        Button userPanelButton = new Button(" Zalogowany jako: " + UserSession.getInstance().getUsername(), () -> {
-            UserPanelDialog.showUserPanelDialog(textGUI);
-        });
-        userPanelButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        mainPanel.addComponent(userPanelButton);
+        if (UserSession.getInstance().isAuthenticated()) {
+            // Przycisk panelu użytkownika
+            Button userPanelButton = new Button(" Zalogowany jako: " + UserSession.getInstance().getUsername(), () -> {
+                UserPanelDialog.showUserPanelDialog(textGUI);
+            });
+            userPanelButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+            mainPanel.addComponent(userPanelButton);
 
+            // Przycisk wylogowania
+            Button logoutButton = new Button(" Wyloguj się ", () -> {
+                UserSession.getInstance().logout();
+                try {
+                    updateMainMenu(textGUI, window);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            logoutButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+            mainPanel.addComponent(logoutButton);
+        } else {
+            // Przycisk logowania
+            Button loginButton = new Button(" Zaloguj się ", () -> {
+                LoginDialog.showLoginDialog(textGUI);
+                try {
+                    updateMainMenu(textGUI, window);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            loginButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+            mainPanel.addComponent(loginButton);
+        }
+
+        // Przyciski wspólne dla obu stanów
         Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> {
             MessageDialog.showMessageDialog(textGUI, "Przeglądanie", "Funkcja w budowie");
         });
         browseCarsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         mainPanel.addComponent(browseCarsButton);
 
-        Button exitButton = new Button(" Zakończ ", textGUI.getActiveWindow()::close);
+        // Użyj przekazanego okna
+        Button exitButton = new Button(" Zakończ ", window::close);
         exitButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         mainPanel.addComponent(exitButton);
 

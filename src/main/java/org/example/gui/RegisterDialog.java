@@ -53,6 +53,9 @@ public class RegisterDialog {
 
             if (name.isEmpty() || surname.isEmpty() || login.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 MessageDialog.showMessageDialog(textGUI, "Błąd", "Wszystkie pola muszą być wypełnione");
+            } else if (userService.checkIfLoginExists(login)) {
+                MessageDialog.showMessageDialog(textGUI, "Błąd", "Podany login jest już zajęty");
+
             } else if (userService.registerUser(name, surname, login, BCrypt.hashpw(password, BCrypt.gensalt()), email, phone)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Zarejestrowano pomyślnie");
                 textGUI.getActiveWindow().close();

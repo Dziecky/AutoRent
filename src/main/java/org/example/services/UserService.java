@@ -42,6 +42,21 @@ public class UserService {
         return "";
     }
 
+    public boolean checkIfLoginExists(String login) {
+        String query = "SELECT COUNT(*) AS count FROM Uzytkownik WHERE login = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, login);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public String getUserSurname(String username) {
         String query = "SELECT nazwisko FROM Uzytkownik WHERE login = ?";
         try (Connection connection = DatabaseConnection.getConnection();

@@ -29,4 +29,9 @@ public class UserSession {
         this.authenticated = authenticated;
         this.username = username;
     }
+
+    public void logout() {
+        this.authenticated = false;
+        this.username = null;
+    }
 }
