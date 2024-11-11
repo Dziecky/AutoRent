@@ -5,6 +5,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import org.example.services.AuthenticationService;
+import org.example.services.UserService;
 import org.example.sessions.UserSession;
 
 import java.io.IOException;
@@ -41,7 +42,8 @@ public class LoginDialog {
 
             if (authenticationService.authenticateUser(login, password)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Zalogowano pomyślnie");
-                UserSession.getInstance().setAuthenticated(true, login);
+                UserService userSevice = new UserService();
+                UserSession.getInstance().setAuthenticated(true, login, userSevice.getUserRole(login));
                 try {
                     MainMenu.updateMainMenu(textGUI, loginWindow);
                 } catch (IOException e) {

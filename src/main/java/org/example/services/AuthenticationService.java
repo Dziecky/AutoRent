@@ -1,23 +1,25 @@
 package org.example.services;
 
 import org.example.database.DatabaseConnection;
+import org.example.sessions.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class AuthenticationService {
     public boolean authenticateUser(String login, String password) {
-        String query = "SELECT haslo FROM Uzytkownik WHERE login = ?";
+        String query = "SELECT haslo, rola FROM Uzytkownik WHERE login = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, login);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String hashedPassword = resultSet.getString("haslo");
-                return BCrypt.checkpw(password, hashedPassword);
+                String role = resultSet.getString("rola");
+                if (BCrypt.checkpw(password, hashedPassword)) {
+                    UserSession.getInstance().setAuthenticated(true, login, role);
+                    return true;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

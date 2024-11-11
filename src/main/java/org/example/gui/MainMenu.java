@@ -62,6 +62,21 @@ public class MainMenu {
             });
             logoutButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
             mainPanel.addComponent(logoutButton);
+            if (UserSession.getInstance().getRole().equals("OWNER")) {
+                // Przycisk dodawania samochodów
+                Button addCarButton = new Button(" Dodaj samochód ", () -> {
+                    AddCarDialog.showAddCarDialog(textGUI);
+                });
+                addCarButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+                mainPanel.addComponent(addCarButton);
+
+                // Przycisk przeglądania wypożyczeń
+                Button viewRentalsButton = new Button(" Przeglądaj wypożyczenia ", () -> {
+                    RentalsDialog.showRentalsDialog(textGUI);
+                });
+                viewRentalsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+                mainPanel.addComponent(viewRentalsButton);
+            }
         } else {
             // Przycisk logowania
             Button loginButton = new Button(" Zaloguj się ", () -> {

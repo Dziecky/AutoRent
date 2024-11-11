@@ -54,6 +54,7 @@ public class DatabaseInitializer {
                         samochod_id INT NOT NULL,
                         data_wypozyczenia DATE NOT NULL,
                         data_zwrotu DATE,
+                        status VARCHAR(20) DEFAULT 'AKTYWNE',
                         FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownik(id),
                         FOREIGN KEY (samochod_id) REFERENCES Samochod(id)
                     )

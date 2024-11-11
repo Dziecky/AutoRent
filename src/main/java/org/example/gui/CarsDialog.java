@@ -5,17 +5,22 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import org.example.models.Car;
+import org.example.models.Rental;
 import org.example.services.CarService;
+import org.example.services.RentalService;
+import org.example.services.UserService;
 import org.example.sessions.UserSession;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
 public class CarsDialog {
     private static CarService carService = new CarService();
+    private static RentalService rentalService = new RentalService(); // Added RentalService instance
     private static List<Car> cars;
     private static Panel carsPanel;
     private static Panel filtersPanel;
@@ -23,18 +28,18 @@ public class CarsDialog {
     private static LocalDate selectedDate = null;
 
     public static void showAvailableCarsDialog(WindowBasedTextGUI textGUI) {
-        CarsDialog.textGUI = textGUI; // Przechowujemy textGUI do użytku w handlerach
+        CarsDialog.textGUI = textGUI; // Store textGUI for use in handlers
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
 
-        // Inicjalizacja paneli
+        // Initialize panels
         Panel mainPanel = new Panel();
         mainPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
-        // Panel filtrowania
+        // Filtering panel
         filtersPanel = new Panel();
         filtersPanel.setLayoutManager(new GridLayout(4));
 
-        // Komponenty filtrowania
+        // Filtering components
         TextBox brandFilter = new TextBox();
         TextBox modelFilter = new TextBox();
         TextBox yearFromFilter = new TextBox();
@@ -44,7 +49,7 @@ public class CarsDialog {
         TextBox dateFromFilter = new TextBox();
         TextBox dateToFilter = new TextBox();
 
-        // Dodajemy komponenty filtrowania do panelu
+        // Add filtering components to panel
         filtersPanel.addComponent(new Label("Marka:"));
         filtersPanel.addComponent(brandFilter);
         filtersPanel.addComponent(new Label("Model:"));
@@ -57,9 +62,9 @@ public class CarsDialog {
         filtersPanel.addComponent(transmissionFilter);
         filtersPanel.addComponent(new Label("Rodzaj paliwa:"));
         filtersPanel.addComponent(fuelTypeFilter);
-        filtersPanel.addComponent(new Label("Data od:"));
+        filtersPanel.addComponent(new Label("Data od (YYYY-MM-DD):"));
         filtersPanel.addComponent(dateFromFilter);
-        filtersPanel.addComponent(new Label("do:"));
+        filtersPanel.addComponent(new Label("do (YYYY-MM-DD):"));
         filtersPanel.addComponent(dateToFilter);
 
         Button filterButton = new Button(" Filtruj ", () -> {
@@ -89,33 +94,33 @@ public class CarsDialog {
         filtersPanel.addComponent(filterButton);
         filtersPanel.addComponent(clearButton);
 
-        // Inicjalizacja panelu samochodów
+        // Initialize cars panel
         carsPanel = new Panel();
         carsPanel.setLayoutManager(new GridLayout(2));
 
-        // Dodajemy panele do głównego panelu
+        // Add panels to main panel
         mainPanel.addComponent(filtersPanel.withBorder(Borders.singleLine("Filtry")));
         mainPanel.addComponent(new Separator(Direction.HORIZONTAL));
         mainPanel.addComponent(carsPanel);
 
-        // Pobieramy wszystkie samochody na początku
+        // Get all cars initially
         cars = carService.getAllCars();
         updateCarList("", "", "", null, null, null, null, null);
 
-        // Tworzymy okno
+        // Create window
         BasicWindow carsWindow = new BasicWindow("Dostępne Samochody");
         carsWindow.setSize(new TerminalSize(screenSize.getColumns(), screenSize.getRows()));
-        carsWindow.setPosition(new TerminalPosition(0, 0));
+        carsWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4 + 7, 0));
         carsWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION, Window.Hint.FIXED_SIZE));
         carsWindow.setComponent(mainPanel.withBorder(Borders.singleLine()));
         carsWindow.setCloseWindowWithEscape(true);
         textGUI.addWindowAndWait(carsWindow);
     }
 
-    private static void updateCarList(String brand, String model, String yearFromStr, String yearToStr, String transmission, String fuelType, String dareFromStr, String dateToStr) {
+    private static void updateCarList(String brand, String model, String yearFromStr, String yearToStr, String transmission, String fuelType, String dateFromStr, String dateToStr) {
         carsPanel.removeAllComponents();
 
-        List<Car> filteredCars = carService.getFilteredCars(brand, model, yearFromStr, yearToStr, transmission, fuelType, dareFromStr, dateToStr);
+        List<Car> filteredCars = carService.getFilteredCars(brand, model, yearFromStr, yearToStr, transmission, fuelType, dateFromStr, dateToStr);
 
         if (filteredCars.isEmpty()) {
             carsPanel.addComponent(new Label("Brak dostępnych samochodów dla wybranych filtrów."));
@@ -137,6 +142,7 @@ public class CarsDialog {
 
     private static void showCarDetailsDialog(WindowBasedTextGUI textGUI, Car car) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
+        UserService userService = new UserService();
 
         Panel carDetailsPanel = new Panel();
         carDetailsPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
@@ -153,13 +159,56 @@ public class CarsDialog {
         carDetailsPanel.addComponent(new Label("Cena za dzień: " + car.pricePerDay() + " PLN"));
 
         if (UserSession.getInstance().isAuthenticated()) {
-            Button rentButton = new Button(" Wypożycz ", () -> {
-                // Logika wypożyczenia
-                MessageDialog.showMessageDialog(textGUI, "Wypożyczenie", "Samochód został pomyślnie wypożyczony!");
-                textGUI.getActiveWindow().close();
-            });
-            rentButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-            carDetailsPanel.addComponent(rentButton);
+            if (UserSession.getInstance().getRole().equals("USER")) {
+                // Ask for rental dates
+                TextBox dateFromBox = new TextBox();
+                TextBox dateToBox = new TextBox();
+
+                carDetailsPanel.addComponent(new Label("Data od (YYYY-MM-DD):"));
+                carDetailsPanel.addComponent(dateFromBox);
+                carDetailsPanel.addComponent(new Label("Data do (YYYY-MM-DD):"));
+                carDetailsPanel.addComponent(dateToBox);
+
+                Button rentButton = new Button(" Wypożycz ", () -> {
+                    String dateFromStr = dateFromBox.getText();
+                    String dateToStr = dateToBox.getText();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                    try {
+                        LocalDate dateFrom = LocalDate.parse(dateFromStr, formatter);
+                        LocalDate dateTo = LocalDate.parse(dateToStr, formatter);
+
+                        if (dateFrom.isAfter(dateTo)) {
+                            MessageDialog.showMessageDialog(textGUI, "Błąd", "Data rozpoczęcia musi być przed datą zakończenia.");
+                            return;
+                        }
+
+                        // Check if the car is available
+                        List<Rental> conflictingRentals = rentalService.getConflictingRentals(car.id(), dateFrom, dateTo);
+
+                        if (!conflictingRentals.isEmpty()) {
+                            StringBuilder message = new StringBuilder("Samochód jest niedostępny w następujących terminach:\n");
+                            for (Rental rental : conflictingRentals) {
+                                message.append("- Od: ").append(rental.getRentalDate())
+                                        .append(" Do: ").append(rental.getReturnDate()).append("\n");
+                            }
+                            MessageDialog.showMessageDialog(textGUI, "Niedostępny", message.toString());
+                        } else {
+                            // Calculate the number of days
+                            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(dateFrom, dateTo) + 1;
+                            double totalPrice = daysBetween * car.pricePerDay();
+
+                            // Display confirmation window
+                            showConfirmationDialog(textGUI, car, dateFrom, dateTo, daysBetween, totalPrice);
+                        }
+
+                    } catch (DateTimeParseException e) {
+                        MessageDialog.showMessageDialog(textGUI, "Błąd", "Nieprawidłowy format daty. Użyj formatu YYYY-MM-DD.");
+                    }
+                });
+                rentButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
+                carDetailsPanel.addComponent(rentButton);
+            }
         } else {
             Button loginButton = new Button(" Zaloguj się ", () -> {
                 LoginDialog.showLoginDialog(textGUI);
@@ -171,11 +220,49 @@ public class CarsDialog {
         }
 
         BasicWindow carDetailsWindow = new BasicWindow("Szczegóły Samochodu");
-        carDetailsWindow.setSize(new TerminalSize(screenSize.getColumns() / 2, screenSize.getRows()));
-        carDetailsWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4, 0));
+        carDetailsWindow.setSize(new TerminalSize(screenSize.getColumns() / 3, screenSize.getRows()));
+        carDetailsWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4 * 3 - 7, 0));
         carDetailsWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION, Window.Hint.FIXED_SIZE));
         carDetailsWindow.setComponent(carDetailsPanel.withBorder(Borders.singleLine()));
         carDetailsWindow.setCloseWindowWithEscape(true);
         textGUI.addWindowAndWait(carDetailsWindow);
+    }
+
+    private static void showConfirmationDialog(WindowBasedTextGUI textGUI, Car car, LocalDate dateFrom, LocalDate dateTo, long daysBetween, double totalPrice) {
+        Panel confirmationPanel = new Panel();
+        confirmationPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+
+        confirmationPanel.addComponent(new Label("Potwierdzenie wypożyczenia"));
+        confirmationPanel.addComponent(new Label("Samochód: " + car.brand() + " " + car.model()));
+        confirmationPanel.addComponent(new Label("Od: " + dateFrom.toString()));
+        confirmationPanel.addComponent(new Label("Do: " + dateTo.toString()));
+        confirmationPanel.addComponent(new Label("Ilość dni: " + daysBetween));
+        confirmationPanel.addComponent(new Label("Łączna kwota: " + totalPrice + " PLN"));
+
+        Button payButton = new Button(" Zapłać ", () -> {
+            UserService userService = new UserService();
+            int userId = userService.getUserId(UserSession.getInstance().getUsername());
+
+            if (rentalService.rentCar(car.id(), userId, dateFrom, dateTo)) {
+                MessageDialog.showMessageDialog(textGUI, "Wypożyczenie", "Samochód został pomyślnie wypożyczony!");
+                textGUI.getActiveWindow().close(); // Close confirmation window
+                textGUI.getActiveWindow().close(); // Close car details window
+            } else {
+                MessageDialog.showMessageDialog(textGUI, "Błąd", "Nie udało się wypożyczyć samochodu.");
+            }
+        });
+
+        Button cancelButton = new Button(" Anuluj ", () -> {
+            textGUI.getActiveWindow().close(); // Close confirmation window
+        });
+
+        confirmationPanel.addComponent(new EmptySpace(new TerminalSize(0, 1))); // Add some spacing
+        confirmationPanel.addComponent(payButton);
+        confirmationPanel.addComponent(cancelButton);
+
+        BasicWindow confirmationWindow = new BasicWindow("Potwierdzenie");
+        confirmationWindow.setComponent(confirmationPanel.withBorder(Borders.singleLine()));
+        confirmationWindow.setCloseWindowWithEscape(true);
+        textGUI.addWindow(confirmationWindow);
     }
 }

@@ -2,95 +2,63 @@ package org.example.services;
 
 import org.example.database.DatabaseConnection;
 import org.example.models.Car;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CarService {
-    public List<Car> getAllCars() {
-        List<Car> cars = new ArrayList<>();
-        String query = "SELECT * FROM Samochod";
 
-        return getCars(cars, query);
+    public List<Car> getAllCars() {
+        return getFilteredCars(null, null, null, null, null, null, null, null);
     }
 
     public List<Car> getFilteredCars(String brand, String model, String yearFromStr, String yearToStr, String transmission, String fuelType, String dateFromStr, String dateToStr) {
-        List<Car> allCars = getAllCars();
-        List<Car> filteredCars = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        List<Car> cars = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT * FROM Samochod WHERE 1=1");
+        List<Object> parameters = new ArrayList<>();
 
-        for (Car car : allCars) {
-            boolean matches = true;
-
-            if (brand != null && !brand.isEmpty() && !car.brand().equalsIgnoreCase(brand)) {
-                matches = false;
-            }
-            if (model != null && !model.isEmpty() && !car.model().equalsIgnoreCase(model)) {
-                matches = false;
-            }
-            if (yearFromStr != null && !yearFromStr.isEmpty() && car.year() < Integer.parseInt(yearFromStr)) {
-                matches = false;
-            }
-            if (yearToStr != null && !yearToStr.isEmpty() && car.year() > Integer.parseInt(yearToStr)) {
-                matches = false;
-            }
-            if (transmission != null && !transmission.isEmpty() && !car.transmission().equalsIgnoreCase(transmission)) {
-                matches = false;
-            }
-            if (fuelType != null && !fuelType.isEmpty() && !car.fuelType().equalsIgnoreCase(fuelType)) {
-                matches = false;
-            }
-            if (dateFromStr != null && !dateFromStr.isEmpty() && dateToStr != null && !dateToStr.isEmpty()) {
-                try {
-                    LocalDate availabilityDateFrom = LocalDate.parse(dateFromStr, formatter);
-                    LocalDate availabilityDateTo = LocalDate.parse(dateToStr, formatter);
-                    if (!isCarAvailable(car, availabilityDateFrom, availabilityDateTo)) {
-                        matches = false;
-                    }
-                } catch (DateTimeParseException e) {
-                    System.err.println("Invalid date format: " + e.getMessage());
-                    matches = false;
-                }
-            }
-
-            if (matches) {
-                filteredCars.add(car);
-            }
+        if (brand != null && !brand.isEmpty()) {
+            query.append(" AND marka LIKE ?");
+            parameters.add("%" + brand + "%");
+        }
+        if (model != null && !model.isEmpty()) {
+            query.append(" AND model LIKE ?");
+            parameters.add("%" + model + "%");
+        }
+        if (yearFromStr != null && !yearFromStr.isEmpty()) {
+            query.append(" AND rocznik >= ?");
+            parameters.add(Integer.parseInt(yearFromStr));
+        }
+        if (yearToStr != null && !yearToStr.isEmpty()) {
+            query.append(" AND rocznik <= ?");
+            parameters.add(Integer.parseInt(yearToStr));
+        }
+        if (transmission != null && !transmission.isEmpty()) {
+            query.append(" AND skrzynia_biegow = ?");
+            parameters.add(transmission);
+        }
+        if (fuelType != null && !fuelType.isEmpty()) {
+            query.append(" AND rodzaj_paliwa = ?");
+            parameters.add(fuelType);
         }
 
-        return filteredCars;
-    }
+        // Filtracja po dostępności w danym przedziale dat
+        if (dateFromStr != null && !dateFromStr.isEmpty() && dateToStr != null && !dateToStr.isEmpty()) {
+            query.append(" AND id NOT IN (SELECT samochod_id FROM Wypozyczenie WHERE (? <= data_zwrotu AND ? >= data_wypozyczenia))");
+            parameters.add(LocalDate.parse(dateFromStr));
+            parameters.add(LocalDate.parse(dateToStr));
+        }
 
-    private boolean isCarAvailable(Car car, LocalDate availabilityDateFrom, LocalDate availabilityDateTo) {
-        String query = "SELECT COUNT(*) AS count FROM Wypozyczenie WHERE samochod_id = ? AND data_zwrotu >= ? AND data_wypozyczenia <= ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, car.id());
-            preparedStatement.setDate(2, java.sql.Date.valueOf(availabilityDateFrom));
-            preparedStatement.setDate(3, java.sql.Date.valueOf(availabilityDateTo));
+             PreparedStatement preparedStatement = connection.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("count") == 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private List<Car> getCars(List<Car> cars, String query) {
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
             createCarList(cars, resultSet);
 
         } catch (SQLException e) {
@@ -100,7 +68,31 @@ public class CarService {
         return cars;
     }
 
-    private void createCarList(List<Car> filteredCars, ResultSet resultSet) throws SQLException {
+    public boolean addCar(Car car) {
+        String query = "INSERT INTO Samochod (marka, model, rocznik, moc, pojemnosc_silnika, rodzaj_paliwa, skrzynia_biegow, ilosc_miejsc, cena_za_dzien) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, car.brand());
+            preparedStatement.setString(2, car.model());
+            preparedStatement.setInt(3, car.year());
+            preparedStatement.setInt(4, car.power());
+            preparedStatement.setDouble(5, car.engineCapacity());
+            preparedStatement.setString(6, car.fuelType());
+            preparedStatement.setString(7, car.transmission());
+            preparedStatement.setInt(8, car.seats());
+            preparedStatement.setDouble(9, car.pricePerDay());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void createCarList(List<Car> cars, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
             String carBrand = resultSet.getString("marka");
@@ -113,7 +105,7 @@ public class CarService {
             int seats = resultSet.getInt("ilosc_miejsc");
             double pricePerDay = resultSet.getDouble("cena_za_dzien");
 
-            filteredCars.add(new Car(id, carBrand, carModel, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay));
+            cars.add(new Car(id, carBrand, carModel, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay));
         }
     }
 }
