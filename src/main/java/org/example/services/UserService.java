@@ -146,39 +146,7 @@ public class UserService {
                 "JOIN Samochod s ON w.samochod_id = s.id " +
                 "JOIN Uzytkownik u ON w.uzytkownik_id = u.id " +
                 "WHERE u.login = ? AND w.data_zwrotu >= CURRENT_DATE AND w.status = 'AKTYWNE'";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                // Pobieranie danych samochodu
-                Car car = new Car(
-                        resultSet.getInt("car_id"),
-                        resultSet.getString("marka"),
-                        resultSet.getString("model"),
-                        resultSet.getInt("rocznik"),
-                        resultSet.getInt("moc"),
-                        resultSet.getDouble("pojemnosc_silnika"),
-                        resultSet.getString("rodzaj_paliwa"),
-                        resultSet.getString("skrzynia_biegow"),
-                        resultSet.getInt("ilosc_miejsc"),
-                        resultSet.getDouble("cena_za_dzien")
-                );
-
-                // Pobieranie danych wypożyczenia
-                Rental rental = new Rental(
-                        resultSet.getInt("rental_id"),
-                        resultSet.getDate("data_wypozyczenia").toLocalDate(),
-                        resultSet.getDate("data_zwrotu").toLocalDate(),
-                        car
-                );
-
-                rentals.add(rental);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return rentals;
+        return getRentals(username, rentals, query);
     }
 
     public List<Rental> getUserPastRentals(String username) {
@@ -189,6 +157,10 @@ public class UserService {
                 "JOIN Samochod s ON w.samochod_id = s.id " +
                 "JOIN Uzytkownik u ON w.uzytkownik_id = u.id " +
                 "WHERE u.login = ? AND w.data_zwrotu < CURRENT_DATE AND w.status = 'AKTYWNE'";
+        return getRentals(username, rentals, query);
+    }
+
+    private List<Rental> getRentals(String username, List<Rental> rentals, String query) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, username);

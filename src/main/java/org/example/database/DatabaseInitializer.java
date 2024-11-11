@@ -38,7 +38,7 @@ public class DatabaseInitializer {
                         rocznik INT NOT NULL,
                         moc INT NOT NULL,
                         pojemnosc_silnika DECIMAL(4, 1) NOT NULL,
-                        rodzaj_paliwa VARCHAR(20) NOT NULL CHECK (rodzaj_paliwa IN ('benzyna', 'diesel', 'lpg', 'elektryczny')),
+                        rodzaj_paliwa VARCHAR(20) NOT NULL CHECK (rodzaj_paliwa IN ('benzyna', 'diesel', 'lpg', 'elektryczny', 'hybryda')),
                         skrzynia_biegow VARCHAR(20) NOT NULL CHECK (skrzynia_biegow IN ('manualna', 'automatyczna')),
                         ilosc_miejsc INT NOT NULL,
                         cena_za_dzien DECIMAL(10, 2) NOT NULL
