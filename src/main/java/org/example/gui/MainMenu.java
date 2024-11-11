@@ -3,7 +3,6 @@ package org.example.gui;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import org.example.sessions.UserSession;
@@ -41,7 +40,7 @@ public class MainMenu {
         }
     }
 
-    private static void updateMainMenu(WindowBasedTextGUI textGUI, BasicWindow window) throws IOException {
+    public static void updateMainMenu(WindowBasedTextGUI textGUI, BasicWindow window) throws IOException {
         mainPanel.removeAllComponents();
 
         if (UserSession.getInstance().isAuthenticated()) {
@@ -79,7 +78,7 @@ public class MainMenu {
 
         // Przyciski wspólne dla obu stanów
         Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> {
-            AvailableCarsDialog.showAvailableCarsDialog(textGUI);
+            CarsDialog.showAvailableCarsDialog(textGUI);
         });
         browseCarsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         mainPanel.addComponent(browseCarsButton);

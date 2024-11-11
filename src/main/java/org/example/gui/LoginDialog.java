@@ -7,6 +7,7 @@ import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import org.example.services.AuthenticationService;
 import org.example.sessions.UserSession;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class LoginDialog {
@@ -17,6 +18,12 @@ public class LoginDialog {
         loginPanel.setLayoutManager(new GridLayout(2));
 
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
+
+        BasicWindow loginWindow = new BasicWindow("Logowanie");
+        // Ustawienia okna logowania
+        loginWindow.setSize(new TerminalSize(screenSize.getColumns() / 2, screenSize.getRows()));
+        loginWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 2, screenSize.getRows()/3));
+        loginWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION));
 
         Label usernameLabel = new Label("Login:");
         TextBox usernameBox = new TextBox();
@@ -35,6 +42,11 @@ public class LoginDialog {
             if (authenticationService.authenticateUser(login, password)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Zalogowano pomyślnie");
                 UserSession.getInstance().setAuthenticated(true, login);
+                try {
+                    MainMenu.updateMainMenu(textGUI, loginWindow);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 textGUI.getActiveWindow().close();
             } else {
                 MessageDialog.showMessageDialog(textGUI, "Błąd", "Nieprawidłowy login lub hasło");
@@ -51,12 +63,6 @@ public class LoginDialog {
         });
         registerButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         loginPanel.addComponent(registerButton);
-
-        BasicWindow loginWindow = new BasicWindow("Logowanie");
-        // Ustawienia okna logowania
-        loginWindow.setSize(new TerminalSize(screenSize.getColumns() / 2, screenSize.getRows()));
-        loginWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 2, screenSize.getRows()/3));
-        loginWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION));
 
         loginWindow.setComponent(loginPanel.withBorder(Borders.singleLine()));
         textGUI.addWindowAndWait(loginWindow);
