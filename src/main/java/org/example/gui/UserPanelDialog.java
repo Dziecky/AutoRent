@@ -117,6 +117,22 @@ public class UserPanelDialog {
                 userPanel.addComponent(carButton);
             }
         }
+
+        // Wyświetlenie historii wypożyczeń
+        Label rentalHistoryLabel = new Label("\nHistoria Twoich wypożyczeń:");
+        userPanel.addComponent(rentalHistoryLabel);
+
+        List<Rental> rentalHistory = userService.getUserPastRentals(username);
+        if (rentalHistory.isEmpty()) {
+            userPanel.addComponent(new Label("Brak zakończonych wypożyczeń."));
+        } else {
+            for (Rental rental : rentalHistory) {
+                Button carButton = new Button(rental.getCar().brand() + " " + rental.getCar().model(), () -> {
+                    showRentalDetailsDialog(textGUI, rental);
+                });
+                userPanel.addComponent(carButton);
+            }
+        }
     }
 
     private static void showRentalDetailsDialog(WindowBasedTextGUI textGUI, Rental rental) {
