@@ -11,9 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserPanelDialog {
-    private static UserService userService = new UserService();
+    private static final UserService userService = new UserService();
     private static Panel userPanel;
-    private static TerminalSize screenSize;
 
     public static void showUserPanelDialog(WindowBasedTextGUI textGUI) {
         String username = UserSession.getInstance().getUsername();
@@ -26,12 +25,16 @@ public class UserPanelDialog {
 
         // Utworzenie okna panelu użytkownika
         BasicWindow userWindow = new BasicWindow("Panel Użytkownika");
+        setSizeConf(screenSize, userWindow, userPanel);
+        userWindow.setCloseWindowWithEscape(true);
+        textGUI.addWindowAndWait(userWindow);
+    }
+
+    private static void setSizeConf(TerminalSize screenSize, BasicWindow userWindow, Panel userPanel) {
         userWindow.setSize(new TerminalSize(screenSize.getColumns(), screenSize.getRows()));
         userWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4 + 7, 0));
         userWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION, Window.Hint.FIXED_SIZE));
         userWindow.setComponent(userPanel.withBorder(Borders.singleLine()));
-        userWindow.setCloseWindowWithEscape(true);
-        textGUI.addWindowAndWait(userWindow);
     }
 
     private static void showEditUserDialog(WindowBasedTextGUI textGUI, String username) {
@@ -68,10 +71,7 @@ public class UserPanelDialog {
         editPanel.addComponent(cancelButton);
 
         BasicWindow editWindow = new BasicWindow("Edytuj Dane Użytkownika");
-        editWindow.setSize(new TerminalSize(screenSize.getColumns(), screenSize.getRows()));
-        editWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 4 + 7, 0));
-        editWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION, Window.Hint.FIXED_SIZE));
-        editWindow.setComponent(editPanel.withBorder(Borders.singleLine()));
+        setSizeConf(screenSize, editWindow, editPanel);
         textGUI.addWindowAndWait(editWindow);
     }
 

@@ -1,19 +1,15 @@
 package org.example.gui;
 
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import org.example.services.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Arrays;
-
 public class RegisterDialog {
     private static final UserService userService = new UserService();
 
     public static void showRegisterDialog(WindowBasedTextGUI textGUI) {
-        TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
         Panel registerPanel = new Panel();
         registerPanel.setLayoutManager(new GridLayout(2));
 
