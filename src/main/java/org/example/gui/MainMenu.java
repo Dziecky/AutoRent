@@ -79,7 +79,7 @@ public class MainMenu {
 
         // Przyciski wspólne dla obu stanów
         Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> {
-            MessageDialog.showMessageDialog(textGUI, "Przeglądanie", "Funkcja w budowie");
+            AvailableCarsDialog.showAvailableCarsDialog(textGUI);
         });
         browseCarsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         mainPanel.addComponent(browseCarsButton);
