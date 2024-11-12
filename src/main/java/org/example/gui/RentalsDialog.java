@@ -45,6 +45,9 @@ public class RentalsDialog {
     private static void showRentalDetailsDialog(WindowBasedTextGUI textGUI, Rental rental) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
 
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate()) + 1;
+        double totalPrice = daysBetween * rental.getCar().pricePerDay();
+
         Panel detailsPanel = new Panel();
         detailsPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
@@ -66,18 +69,18 @@ public class RentalsDialog {
         // Wyświetlanie szczegółów użytkownika
         User user = rental.getUser();
         detailsPanel.addComponent(new Label("Szczegóły użytkownika:"));
-        detailsPanel.addComponent(new Label("ID: " + user.getId()));
         detailsPanel.addComponent(new Label("Imię: " + user.getName()));
         detailsPanel.addComponent(new Label("Nazwisko: " + user.getSurname()));
         detailsPanel.addComponent(new Label("Login: " + user.getLogin()));
         detailsPanel.addComponent(new Label("Email: " + user.getEmail()));
         detailsPanel.addComponent(new Label("Numer telefonu: " + user.getPhone()));
-        detailsPanel.addComponent(new Label("Rola: " + user.getRole()));
         detailsPanel.addComponent(new Separator(Direction.HORIZONTAL));
 
         // Wyświetlanie szczegółów wypożyczenia
         detailsPanel.addComponent(new Label("Data wypożyczenia: " + rental.getRentalDate()));
         detailsPanel.addComponent(new Label("Data zwrotu: " + rental.getReturnDate()));
+        detailsPanel.addComponent(new Label("Liczba dni: " + daysBetween));
+        detailsPanel.addComponent(new Label("Cena całkowita: " + totalPrice + " PLN"));
 
         BasicWindow detailsWindow = new BasicWindow("Szczegóły Wypożyczenia");
         detailsWindow.setSize(new TerminalSize(screenSize.getColumns() / 3, screenSize.getRows()));

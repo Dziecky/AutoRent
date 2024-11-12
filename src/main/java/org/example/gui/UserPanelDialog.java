@@ -138,6 +138,9 @@ public class UserPanelDialog {
     private static void showRentalDetailsDialog(WindowBasedTextGUI textGUI, Rental rental) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
 
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate()) + 1;
+        double totalPrice = daysBetween * rental.getCar().pricePerDay();
+
         Panel detailsPanel = new Panel();
         detailsPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
@@ -158,6 +161,8 @@ public class UserPanelDialog {
         detailsPanel.addComponent(new Label("Szczegóły wypożyczenia:"));
         detailsPanel.addComponent(new Label("Data wypożyczenia: " + rental.getRentalDate()));
         detailsPanel.addComponent(new Label("Data zwrotu: " + rental.getReturnDate()));
+        detailsPanel.addComponent(new Label("Ilość dni: " + daysBetween));
+        detailsPanel.addComponent(new Label("Cena całkowita: " + totalPrice + " PLN"));
 
         // Sprawdzenie, czy można anulować wypożyczenie
         LocalDate today = LocalDate.now();
