@@ -1,12 +1,12 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import org.example.controllers.RentalController;
+import org.example.controllers.UserController;
 import org.example.models.Rental;
-import org.example.services.RentalService;
-import org.example.services.UserService;
 import org.example.sessions.UserSession;
 
 import java.time.LocalDate;
@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserPanelDialog {
-    private static final UserService userService = new UserService();
-    private static final RentalService rentalService = new RentalService();
+    private static final UserController userController = new UserController();
+    private static final RentalController rentalController = new RentalController();
     private static Panel userPanel;
 
     public static void showUserPanelDialog(WindowBasedTextGUI textGUI) {
@@ -46,10 +46,10 @@ public class UserPanelDialog {
         editPanel.setLayoutManager(new GridLayout(2));
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
 
-        TextBox nameBox = new TextBox().setText(userService.getUserName(username));
-        TextBox surnameBox = new TextBox().setText(userService.getUserSurname(username));
-        TextBox emailBox = new TextBox().setText(userService.getUserEmail(username));
-        TextBox phoneBox = new TextBox().setText(userService.getUserPhone(username));
+        TextBox nameBox = new TextBox().setText(userController.getUserName(username));
+        TextBox surnameBox = new TextBox().setText(userController.getUserSurname(username));
+        TextBox emailBox = new TextBox().setText(userController.getUserEmail(username));
+        TextBox phoneBox = new TextBox().setText(userController.getUserPhone(username));
 
         editPanel.addComponent(new Label("Imię:"));
         editPanel.addComponent(nameBox);
@@ -61,7 +61,7 @@ public class UserPanelDialog {
         editPanel.addComponent(phoneBox);
 
         Button saveButton = new Button(" Zapisz ", () -> {
-            if (userService.updateUser(username, nameBox.getText(), surnameBox.getText(), emailBox.getText(), phoneBox.getText())) {
+            if (userController.updateUser(username, nameBox.getText(), surnameBox.getText(), emailBox.getText(), phoneBox.getText())) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Dane zostały zaktualizowane");
                 refreshUserPanel(textGUI, username);
                 textGUI.getActiveWindow().close();
@@ -84,10 +84,10 @@ public class UserPanelDialog {
 
         // Wyświetlenie zaktualizowanych danych użytkownika
         Label usernameLabel = new Label("Login: " + username);
-        Label nameLabel = new Label("Imię: " + userService.getUserName(username));
-        Label surnameLabel = new Label("Nazwisko: " + userService.getUserSurname(username));
-        Label emailLabel = new Label("Email: " + userService.getUserEmail(username));
-        Label phoneLabel = new Label("Numer telefonu: " + userService.getUserPhone(username));
+        Label nameLabel = new Label("Imię: " + userController.getUserName(username));
+        Label surnameLabel = new Label("Nazwisko: " + userController.getUserSurname(username));
+        Label emailLabel = new Label("Email: " + userController.getUserEmail(username));
+        Label phoneLabel = new Label("Numer telefonu: " + userController.getUserPhone(username));
 
         userPanel.addComponent(usernameLabel);
         userPanel.addComponent(nameLabel);
@@ -106,7 +106,7 @@ public class UserPanelDialog {
         Label rentedCarsLabel = new Label("\nTwoje aktualnie wypożyczone samochody:");
         userPanel.addComponent(rentedCarsLabel);
 
-        List<Rental> rentedCars = userService.getUserCurrentRentals(username);
+        List<Rental> rentedCars = userController.getUserCurrentRentals(username);
         if (rentedCars.isEmpty()) {
             userPanel.addComponent(new Label("Brak aktualnie wypożyczonych samochodów."));
         } else {
@@ -122,7 +122,7 @@ public class UserPanelDialog {
         Label rentalHistoryLabel = new Label("\nHistoria Twoich wypożyczeń:");
         userPanel.addComponent(rentalHistoryLabel);
 
-        List<Rental> rentalHistory = userService.getUserPastRentals(username);
+        List<Rental> rentalHistory = userController.getUserPastRentals(username);
         if (rentalHistory.isEmpty()) {
             userPanel.addComponent(new Label("Brak zakończonych wypożyczeń."));
         } else {
@@ -171,7 +171,7 @@ public class UserPanelDialog {
         if (today.isBefore(rentalStartDate.minusDays(2))) {
             // Jeśli dzisiejsza data jest co najmniej 3 dni przed datą rozpoczęcia wypożyczenia
             Button cancelRentalButton = new Button(" Anuluj wypożyczenie ", () -> {
-                boolean success = rentalService.cancelRental(rental.getId());
+                boolean success = rentalController.cancelRental(rental.getId());
                 if (success) {
                     MessageDialog.showMessageDialog(textGUI, "Sukces", "Wypożyczenie zostało anulowane.");
                     // Odświeżamy panel użytkownika

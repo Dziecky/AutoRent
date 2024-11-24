@@ -1,14 +1,14 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import org.example.controllers.CarController;
+import org.example.controllers.RentalController;
+import org.example.controllers.UserController;
 import org.example.models.Car;
 import org.example.models.Rental;
-import org.example.services.CarService;
-import org.example.services.RentalService;
-import org.example.services.UserService;
 import org.example.sessions.UserSession;
 
 import java.io.IOException;
@@ -19,16 +19,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CarsDialog {
-    private static CarService carService = new CarService();
-    private static RentalService rentalService = new RentalService(); // Added RentalService instance
+    private static final CarController carController = new CarController();
+    private static final RentalController rentalController = new RentalController();
     private static List<Car> cars;
     private static Panel carsPanel;
     private static Panel filtersPanel;
     private static WindowBasedTextGUI textGUI;
-    private static LocalDate selectedDate = null;
 
     public static void showAvailableCarsDialog(WindowBasedTextGUI textGUI) {
-        CarsDialog.textGUI = textGUI; // Store textGUI for use in handlers
+        CarsDialog.textGUI = textGUI;
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
 
         // Initialize panels
@@ -104,7 +103,7 @@ public class CarsDialog {
         mainPanel.addComponent(carsPanel);
 
         // Get all cars initially
-        cars = carService.getAllCars();
+        cars = carController.getAllCars();
         updateCarList("", "", "", null, null, null, null, null);
 
         // Create window
@@ -120,7 +119,7 @@ public class CarsDialog {
     private static void updateCarList(String brand, String model, String yearFromStr, String yearToStr, String transmission, String fuelType, String dateFromStr, String dateToStr) {
         carsPanel.removeAllComponents();
 
-        List<Car> filteredCars = carService.getFilteredCars(brand, model, yearFromStr, yearToStr, transmission, fuelType, dateFromStr, dateToStr);
+        List<Car> filteredCars = carController.getFilteredCars(brand, model, yearFromStr, yearToStr, transmission, fuelType, dateFromStr, dateToStr);
 
         if (filteredCars.isEmpty()) {
             carsPanel.addComponent(new Label("Brak dostępnych samochodów dla wybranych filtrów."));
@@ -142,7 +141,6 @@ public class CarsDialog {
 
     private static void showCarDetailsDialog(WindowBasedTextGUI textGUI, Car car) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
-        UserService userService = new UserService();
 
         Panel carDetailsPanel = new Panel();
         carDetailsPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
@@ -184,7 +182,7 @@ public class CarsDialog {
                         }
 
                         // Check if the car is available
-                        List<Rental> conflictingRentals = rentalService.getConflictingRentals(car.id(), dateFrom, dateTo);
+                        List<Rental> conflictingRentals = rentalController.getConflictingRentals(car.id(), dateFrom, dateTo);
 
                         if (!conflictingRentals.isEmpty()) {
                             StringBuilder message = new StringBuilder("Samochód jest niedostępny w następujących terminach:\n");
@@ -240,13 +238,12 @@ public class CarsDialog {
         confirmationPanel.addComponent(new Label("Łączna kwota: " + totalPrice + " PLN"));
 
         Button payButton = new Button(" Zapłać ", () -> {
-            UserService userService = new UserService();
-            int userId = userService.getUserId(UserSession.getInstance().getUsername());
+            UserController userController = new UserController();
+            int userId = userController.getUserId(UserSession.getInstance().getUsername());
 
-            if (rentalService.rentCar(car.id(), userId, dateFrom, dateTo)) {
+            if (rentalController.rentCar(car.id(), userId, dateFrom, dateTo)) {
                 MessageDialog.showMessageDialog(textGUI, "Wypożyczenie", "Samochód został pomyślnie wypożyczony!");
                 textGUI.getActiveWindow().close(); // Close confirmation window
-                textGUI.getActiveWindow().close(); // Close car details window
             } else {
                 MessageDialog.showMessageDialog(textGUI, "Błąd", "Nie udało się wypożyczyć samochodu.");
             }

@@ -1,11 +1,11 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import org.example.services.AuthenticationService;
-import org.example.services.UserService;
+import org.example.controllers.UserController;
 import org.example.sessions.UserSession;
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.util.Arrays;
 
 public class LoginDialog {
     private static final AuthenticationService authenticationService = new AuthenticationService();
+    private static final UserController userController = new UserController();
 
     public static void showLoginDialog(WindowBasedTextGUI textGUI) {
         Panel loginPanel = new Panel();
@@ -23,7 +24,7 @@ public class LoginDialog {
         BasicWindow loginWindow = new BasicWindow("Logowanie");
         // Ustawienia okna logowania
         loginWindow.setSize(new TerminalSize(screenSize.getColumns() / 2, screenSize.getRows()));
-        loginWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 2, screenSize.getRows()/3));
+        loginWindow.setPosition(new TerminalPosition(screenSize.getColumns() / 2, screenSize.getRows() / 3));
         loginWindow.setHints(Arrays.asList(Window.Hint.NO_DECORATIONS, Window.Hint.FIXED_POSITION));
 
         Label usernameLabel = new Label("Login:");
@@ -42,8 +43,7 @@ public class LoginDialog {
 
             if (authenticationService.authenticateUser(login, password)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Zalogowano pomyślnie");
-                UserService userSevice = new UserService();
-                UserSession.getInstance().setAuthenticated(true, login, userSevice.getUserRole(login));
+                UserSession.getInstance().setAuthenticated(true, login, userController.getUserRole(login));
                 try {
                     MainMenu.updateMainMenu(textGUI, loginWindow);
                 } catch (IOException e) {

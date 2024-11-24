@@ -1,18 +1,18 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
+import org.example.controllers.RentalController;
 import org.example.models.Car;
 import org.example.models.Rental;
 import org.example.models.User;
-import org.example.services.RentalService;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RentalsDialog {
-    private static final RentalService rentalService = new RentalService();
+    private static final RentalController rentalController = new RentalController();
 
     public static void showRentalsDialog(WindowBasedTextGUI textGUI) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
@@ -20,7 +20,7 @@ public class RentalsDialog {
         Panel rentalsPanel = new Panel();
         rentalsPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
-        List<Rental> rentals = rentalService.getAllRentals();
+        List<Rental> rentals = rentalController.getAllRentals();
         if (rentals.isEmpty()) {
             rentalsPanel.addComponent(new Label("Brak wypożyczeń."));
         } else {

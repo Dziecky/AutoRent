@@ -1,16 +1,16 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import org.example.controllers.CarController;
 import org.example.models.Car;
-import org.example.services.CarService;
 
 import java.util.Arrays;
 
 public class AddCarDialog {
-    private static final CarService carService = new CarService();
+    private static final CarController carController = new CarController();
 
     public static void showAddCarDialog(WindowBasedTextGUI textGUI) {
         TerminalSize screenSize = textGUI.getScreen().getTerminalSize();
@@ -66,7 +66,7 @@ public class AddCarDialog {
                     Integer.parseInt(seatsBox.getText()),
                     Double.parseDouble(pricePerDayBox.getText())
             );
-            if (carService.addCar(car)) {
+            if (carController.addCar(car)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Samochód został dodany.");
                 textGUI.getActiveWindow().close();
             } else {

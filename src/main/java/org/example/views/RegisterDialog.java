@@ -1,13 +1,12 @@
-package org.example.gui;
+package org.example.views;
 
-import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
-import org.example.services.UserService;
+import org.example.controllers.UserController;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class RegisterDialog {
-    private static final UserService userService = new UserService();
+    private static final UserController userController = new UserController();
 
     public static void showRegisterDialog(WindowBasedTextGUI textGUI) {
         Panel registerPanel = new Panel();
@@ -49,10 +48,9 @@ public class RegisterDialog {
 
             if (name.isEmpty() || surname.isEmpty() || login.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 MessageDialog.showMessageDialog(textGUI, "Błąd", "Wszystkie pola muszą być wypełnione");
-            } else if (userService.checkIfLoginExists(login)) {
+            } else if (userController.checkIfLoginExists(login)) {
                 MessageDialog.showMessageDialog(textGUI, "Błąd", "Podany login jest już zajęty");
-
-            } else if (userService.registerUser(name, surname, login, BCrypt.hashpw(password, BCrypt.gensalt()), email, phone)) {
+            } else if (userController.registerUser(name, surname, login, BCrypt.hashpw(password, BCrypt.gensalt()), email, phone)) {
                 MessageDialog.showMessageDialog(textGUI, "Sukces", "Zarejestrowano pomyślnie");
                 textGUI.getActiveWindow().close();
             } else {

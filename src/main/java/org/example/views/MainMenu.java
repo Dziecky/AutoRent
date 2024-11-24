@@ -1,10 +1,11 @@
-package org.example.gui;
+package org.example.views;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import org.example.controllers.UserController;
 import org.example.sessions.UserSession;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 
 public class MainMenu {
 
+    private static final UserController userController = new UserController();
     private static Panel mainPanel;
 
     public static void runMainMenu() {

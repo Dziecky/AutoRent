@@ -1,8 +1,7 @@
 package org.example;
 
 import org.example.database.DatabaseConnection;
-import org.example.database.DatabaseInitializer;
-import org.example.gui.MainMenu;
+import org.example.views.MainMenu;
 
 import java.sql.SQLException;
 
