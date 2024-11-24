@@ -21,9 +21,7 @@ import java.util.List;
 public class CarsDialog {
     private static final CarController carController = new CarController();
     private static final RentalController rentalController = new RentalController();
-    private static List<Car> cars;
     private static Panel carsPanel;
-    private static Panel filtersPanel;
     private static WindowBasedTextGUI textGUI;
 
     public static void showAvailableCarsDialog(WindowBasedTextGUI textGUI) {
@@ -35,7 +33,7 @@ public class CarsDialog {
         mainPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
         // Filtering panel
-        filtersPanel = new Panel();
+        Panel filtersPanel = new Panel();
         filtersPanel.setLayoutManager(new GridLayout(4));
 
         // Filtering components
@@ -103,7 +101,6 @@ public class CarsDialog {
         mainPanel.addComponent(carsPanel);
 
         // Get all cars initially
-        cars = carController.getAllCars();
         updateCarList("", "", "", null, null, null, null, null);
 
         // Create window

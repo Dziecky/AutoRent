@@ -13,7 +13,6 @@ import java.util.Arrays;
 
 public class MainMenu {
 
-    private static final UserController userController = new UserController();
     private static Panel mainPanel;
 
     public static void runMainMenu() {
@@ -47,9 +46,7 @@ public class MainMenu {
 
         if (UserSession.getInstance().isAuthenticated()) {
             // Przycisk panelu użytkownika
-            Button userPanelButton = new Button(" Zalogowany jako: " + UserSession.getInstance().getUsername(), () -> {
-                UserPanelDialog.showUserPanelDialog(textGUI);
-            });
+            Button userPanelButton = new Button(" Zalogowany jako: " + UserSession.getInstance().getUsername(), () -> UserPanelDialog.showUserPanelDialog(textGUI));
             userPanelButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
             mainPanel.addComponent(userPanelButton);
 
@@ -66,16 +63,12 @@ public class MainMenu {
             mainPanel.addComponent(logoutButton);
             if (UserSession.getInstance().getRole().equals("OWNER")) {
                 // Przycisk dodawania samochodów
-                Button addCarButton = new Button(" Dodaj samochód ", () -> {
-                    AddCarDialog.showAddCarDialog(textGUI);
-                });
+                Button addCarButton = new Button(" Dodaj samochód ", () -> AddCarDialog.showAddCarDialog(textGUI));
                 addCarButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
                 mainPanel.addComponent(addCarButton);
 
                 // Przycisk przeglądania wypożyczeń
-                Button viewRentalsButton = new Button(" Przeglądaj wypożyczenia ", () -> {
-                    RentalsDialog.showRentalsDialog(textGUI);
-                });
+                Button viewRentalsButton = new Button(" Przeglądaj wypożyczenia ", () -> RentalsDialog.showRentalsDialog(textGUI));
                 viewRentalsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
                 mainPanel.addComponent(viewRentalsButton);
             }
@@ -94,9 +87,7 @@ public class MainMenu {
         }
 
         // Przyciski wspólne dla obu stanów
-        Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> {
-            CarsDialog.showAvailableCarsDialog(textGUI);
-        });
+        Button browseCarsButton = new Button(" Przeglądaj dostępne samochody ", () -> CarsDialog.showAvailableCarsDialog(textGUI));
         browseCarsButton.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
         mainPanel.addComponent(browseCarsButton);
 

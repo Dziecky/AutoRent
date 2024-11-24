@@ -1,6 +1,5 @@
 package org.example.controllers;
 
-import org.example.models.User;
 import org.example.models.Rental;
 import org.example.services.UserService;
 

@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class DatabaseConnection {
 
     private static final Logger logger = Logger.getLogger(DatabaseConnection.class.getName());
-    private static HikariDataSource dataSource;
+    private static final HikariDataSource dataSource;
 
     static {
         Properties properties = new Properties();
