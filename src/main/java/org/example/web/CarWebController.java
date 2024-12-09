@@ -28,7 +28,7 @@ public class CarWebController {
         this.carController = new CarController();
     }
 
-    @GetMapping("/cars")
+    @GetMapping("/")
     public String listCars(@RequestParam(name = "brand", required = false) String brand,
                            @RequestParam(name = "model", required = false) String model,
                            @RequestParam(name = "yearFrom", required = false) String yearFrom,
@@ -48,9 +48,11 @@ public class CarWebController {
                 dateFrom,
                 dateTo
         );
-
+        modelAttr.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+        modelAttr.addAttribute("username", UserSession.getInstance().getUsername());
+        modelAttr.addAttribute("role", UserSession.getInstance().getRole());
         modelAttr.addAttribute("cars", cars);
-        return "cars";
+        return "index";
     }
 
     @GetMapping("/cars/{id}")
@@ -58,12 +60,23 @@ public class CarWebController {
         List<Car> allCars = carController.getAllCars();
         Car found = allCars.stream().filter(car -> car.id() == id).findFirst().orElse(null);
         if (found == null) {
-            return "redirect:/cars";
+            return "redirect:/";
         }
         modelAttr.addAttribute("car", found);
         modelAttr.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+        modelAttr.addAttribute("username", UserSession.getInstance().getUsername());
         modelAttr.addAttribute("role", UserSession.getInstance().getRole());
         return "car-details";
+    }
+
+    @GetMapping("/cars/add")
+    public String showAddCarForm(Model model) {
+        model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+        model.addAttribute("username", UserSession.getInstance().getUsername());
+        if (!UserSession.getInstance().isAuthenticated() || !"OWNER".equals(UserSession.getInstance().getRole())) {
+            return "redirect:/";
+        }
+        return "addCar";
     }
 
     @PostMapping("/cars/add")
@@ -78,6 +91,8 @@ public class CarWebController {
                          @RequestParam(name = "pricePerDay") double pricePerDay,
                          @RequestParam(name = "imageUrl") MultipartFile imageUrl,
                          Model modelAttr) {
+        modelAttr.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+        modelAttr.addAttribute("username", UserSession.getInstance().getUsername());
         // Sprawdzenie roli
         if (!UserSession.getInstance().isAuthenticated() || !"OWNER".equals(UserSession.getInstance().getRole())) {
             return "redirect:/";
@@ -90,11 +105,11 @@ public class CarWebController {
                 String contentType = imageUrl.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
                     modelAttr.addAttribute("error", "Plik musi być obrazem.");
-                    return "redirect:/cars";
+                    return "redirect:/cars/add";
                 }
                 if (imageUrl.getSize() > 5 * 1024 * 1024) {
                     modelAttr.addAttribute("error", "Plik nie może być większy niż 5MB.");
-                    return "redirect:/cars";
+                    return "redirect:/cars/add";
                 }
 
                 String fileName = java.util.UUID.randomUUID() + "_" + Paths.get(imageUrl.getOriginalFilename()).getFileName().toString();
@@ -108,11 +123,11 @@ public class CarWebController {
             } catch (IOException e) {
                 e.printStackTrace();
                 modelAttr.addAttribute("error", "Nie udało się przesłać zdjęcia.");
-                return "redirect:/cars";
+                return "redirect:/cars/add";
             }
         } else {
             modelAttr.addAttribute("error", "Nie wybrano zdjęcia.");
-            return "redirect:/cars";
+            return "redirect:/cars/add";
         }
 
         Car car = new Car(0, brand, model, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay, image);
@@ -121,6 +136,6 @@ public class CarWebController {
         } else {
             modelAttr.addAttribute("error", "Nie udało się dodać samochodu.");
         }
-        return "redirect:/cars";
+        return "redirect:/";
     }
 }

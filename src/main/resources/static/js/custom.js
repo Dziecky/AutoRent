@@ -19,3 +19,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+(function () {
+    'use strict'
+
+    // Pobierz wszystkie formularze, które mają klasę 'needs-validation'
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Pętla po każdym formularzu i dodaj nasłuchiwanie na submit
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()

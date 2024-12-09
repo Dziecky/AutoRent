@@ -25,7 +25,7 @@ public class AuthController {
                         @RequestParam(name = "password") String password,
                         Model model) {
         if (authService.authenticateUser(login, password)) {
-            // Użytkownik zalogowany
+            model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
             return "redirect:/";
         } else {
             model.addAttribute("error", "Nieprawidłowy login lub hasło");

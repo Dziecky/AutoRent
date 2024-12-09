@@ -9,6 +9,10 @@ public class Rental {
     private Car car;
     private User user;
 
+    private boolean canBeCancelled;
+    private double totalPrice;
+    private int daysBetween;
+
     // Konstruktor bez użytkownika
     public Rental(int id, LocalDate rentalDate, LocalDate returnDate, Car car, User user) {
         this.id = id;
@@ -40,5 +44,29 @@ public class Rental {
 
     public Car getCar() {
         return car;
+    }
+
+    public void setCanBeCancelled(LocalDate currentDate) {
+        canBeCancelled = currentDate.isBefore(rentalDate.minusDays(3));
+    }
+
+    public boolean getCanBeCancelled() {
+        return canBeCancelled;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public int getDaysBetween() {
+        return daysBetween;
+    }
+
+    public void setDaysBetween(int daysBetween) {
+        this.daysBetween = daysBetween;
     }
 }

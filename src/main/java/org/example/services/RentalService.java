@@ -14,7 +14,7 @@ public class RentalService {
     public List<Rental> getAllRentals() {
         List<Rental> rentals = new ArrayList<>();
         String query = "SELECT w.id as rental_id, w.data_wypozyczenia, w.data_zwrotu, " +
-                "s.id as car_id, s.marka, s.model, s.rocznik, s.moc, s.pojemnosc_silnika, s.rodzaj_paliwa, s.skrzynia_biegow, s.ilosc_miejsc, s.cena_za_dzien, " +
+                "s.id as car_id, s.marka, s.model, s.rocznik, s.moc, s.pojemnosc_silnika, s.rodzaj_paliwa, s.skrzynia_biegow, s.ilosc_miejsc, s.cena_za_dzien, s.image_url, " +
                 "u.id as user_id, u.imie, u.nazwisko, u.login, u.email, u.numer_telefonu, u.rola " +
                 "FROM Wypozyczenie w " +
                 "JOIN Samochod s ON w.samochod_id = s.id " +
@@ -41,7 +41,7 @@ public class RentalService {
                         resultSet.getString("skrzynia_biegow"),
                         resultSet.getInt("ilosc_miejsc"),
                         resultSet.getDouble("cena_za_dzien"),
-                        resultSet.getString("zdjecie")
+                        resultSet.getString("image_url")
                 );
 
                 // Pobieranie danych użytkownika

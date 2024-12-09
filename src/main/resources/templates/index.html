@@ -2,165 +2,107 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>AutoRent - Strona Główna</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Opcjonalny plik CSS dla dodatkowych stylów -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="/css/custom.css" rel="stylesheet">
-  <!-- Font Awesome (opcjonalnie, jeśli chcesz używać ikon) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-pO3XVVk74xgK1u1kVj6+1wxNVFQeKj+jI9lI3qYBnOupg5qAeW9P1KQus93cG/4VYcP9klUaJPOmda+7I4n9bQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-<!-- Inkluzja header.html jako fragment -->
-<div th:replace="fragments/header :: header"></div>
+<div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-4">
-  <!-- Sekcja powitalna -->
-  <div class="row">
-    <div class="col-12">
-      <div class="jumbotron bg-light p-5 rounded">
-        <h1 class="display-4">Witamy w Wypożyczalni Samochodów AutoRent</h1>
-        <p class="lead">Oferujemy szeroki wybór samochodów na każdą okazję!</p>
-      </div>
+<div class="sidebar">
+  <h3 class="mb-4">Filtry</h3>
+  <form th:action="@{/}" method="get">
+    <div class="form-group">
+      <label for="brand">Marka</label>
+      <input type="text" class="form-control" id="brand" name="brand" th:value="${param.brand}">
     </div>
+
+    <div class="form-group">
+      <label for="model">Model</label>
+      <input type="text" class="form-control" id="model" name="model" th:value="${param.model}">
+    </div>
+
+    <div class="form-group">
+      <label for="yearFrom">Rocznik Od</label>
+      <input type="number" class="form-control" id="yearFrom" name="yearFrom" th:value="${param.yearFrom}">
+    </div>
+
+    <div class="form-group">
+      <label for="yearTo">Rocznik Do</label>
+      <input type="number" class="form-control" id="yearTo" name="yearTo" th:value="${param.yearTo}">
+    </div>
+
+    <div class="form-group">
+      <label for="transmission">Skrzynia Biegów</label>
+      <select class="form-select" id="transmission" name="transmission">
+        <option value="">Dowolny</option>
+        <option value="Manualna" th:selected="${param.transmission == 'Manualna'}">Manualna</option>
+        <option value="Automatyczna" th:selected="${param.transmission == 'Automatyczna'}">Automatyczna</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="fuelType">Rodzaj Paliwa</label>
+      <select class="form-select" id="fuelType" name="fuelType">
+        <option value="">Dowolny</option>
+        <option value="Benzyna" th:selected="${param.fuelType == 'Benzyna'}">Benzyna</option>
+        <option value="Diesel" th:selected="${param.fuelType == 'Diesel'}">Diesel</option>
+        <option value="Elektryk" th:selected="${param.fuelType == 'Elektryk'}">Elektryk</option>
+        <option value="Hybryda" th:selected="${param.fuelType == 'Hybryda'}">Hybryda</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="dateFrom">Data Wypożyczenia Od</label>
+      <input type="date" class="form-control" id="dateFrom" name="dateFrom" th:value="${param.dateFrom}">
+    </div>
+
+    <div class="form-group">
+      <label for="dateTo">Data Wypożyczenia Do</label>
+      <input type="date" class="form-control" id="dateTo" name="dateTo" th:value="${param.dateTo}">
+    </div>
+
+    <div class="filter-buttons">
+      <button type="submit" class="btn btn-success w-100 mb-2">
+        <i class="fas fa-filter me-1"></i>Filtruj
+      </button>
+      <a href="/" class="btn btn-secondary w-100">
+        <i class="fas fa-times me-1"></i>Resetuj
+      </a>
+    </div>
+  </form>
+</div>
+
+<div class="main-content">
+  <div class="jumbotron bg-light p-5 rounded mb-4">
+    <h1 class="display-4">Witamy w Wypożyczalni Samochodów AutoRent</h1>
+    <p class="lead">Oferujemy szeroki wybór samochodów na każdą okazję!</p>
   </div>
 
-  <!-- Sekcja dla zalogowanych użytkowników -->
-  <div th:if="${isAuthenticated}">
-    <div th:if="${role == 'OWNER'}">
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              Przeglądaj wypożyczenia
-            </div>
-            <div class="card-body">
-              <p class="card-text">Zarządzaj wszystkimi wypożyczeniami w systemie.</p>
-              <a href="/rentals" class="btn btn-primary">Przejdź do wypożyczeń</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              Dodaj Nowy Samochód
-            </div>
-            <div class="card-body">
-              <form action="/cars/add" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                  <label for="brand" class="form-label">Marka</label>
-                  <input type="text" class="form-control" id="brand" name="brand" required>
-                </div>
-                <div class="mb-3">
-                  <label for="model" class="form-label">Model</label>
-                  <input type="text" class="form-control" id="model" name="model" required>
-                </div>
-                <div class="mb-3">
-                  <label for="year" class="form-label">Rocznik</label>
-                  <input type="number" class="form-control" id="year" name="year" required>
-                </div>
-                <div class="mb-3">
-                  <label for="power" class="form-label">Moc (KM)</label>
-                  <input type="number" class="form-control" id="power" name="power" required>
-                </div>
-                <div class="mb-3">
-                  <label for="engineCapacity" class="form-label">Pojemność silnika (l)</label>
-                  <input type="number" step="0.1" class="form-control" id="engineCapacity" name="engineCapacity" required>
-                </div>
-                <div class="mb-3">
-                  <label for="fuelType" class="form-label">Rodzaj paliwa</label>
-                  <select class="form-select" id="fuelType" name="fuelType" required>
-                    <option value="" selected disabled>Wybierz rodzaj paliwa</option>
-                    <option value="benzyna">Benzyna</option>
-                    <option value="diesel">Diesel</option>
-                    <option value="lpg">LPG</option>
-                    <option value="elektryczny">Elektryczny</option>
-                    <option value="hybryda">Hybryda</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="transmission" class="form-label">Skrzynia biegów</label>
-                  <select class="form-select" id="transmission" name="transmission" required>
-                    <option value="" selected disabled>Wybierz skrzynię biegów</option>
-                    <option value="manualna">Manualna</option>
-                    <option value="automatyczna">Automatyczna</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="seats" class="form-label">Ilość miejsc</label>
-                  <input type="number" class="form-control" id="seats" name="seats" required>
-                </div>
-                <div class="mb-3">
-                  <label for="pricePerDay" class="form-label">Cena za dzień (PLN)</label>
-                  <input type="number" step="0.01" class="form-control" id="pricePerDay" name="pricePerDay" required>
-                </div>
-                <div class="mb-3">
-                  <label for="imageUrl" class="form-label">Zdjęcie Samochodu</label>
-                  <input type="file" class="form-control" id="imageUrl" name="imageUrl" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-success">Dodaj Samochód</button>
-              </form>
-              <!-- Wiadomości sukcesu lub błędu -->
-              <div th:if="${message}" class="mt-3 alert alert-success" th:text="${message}"></div>
-              <div th:if="${error}" class="mt-3 alert alert-danger" th:text="${error}"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <h2 class="mb-4">Dostępne Samochody</h2>
+  <div th:if="${#lists.isEmpty(cars)}">
+    <p>Brak dostępnych samochodów.</p>
   </div>
-
-  <!-- Sekcja dla niezalogowanych użytkowników -->
-  <div th:if="${!isAuthenticated}">
-    <div class="row">
-      <div class="col-12 mb-4">
-        <div class="alert alert-info" role="alert">
-          Zaloguj się, aby korzystać z pełnych funkcji AutoRent.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sekcja dostępnych samochodów -->
-  <div class="row">
-    <div class="col-12">
-      <h2 class="mb-4">Dostępne Samochody</h2>
-      <!-- Element debugowania -->
-      <div th:if="${#lists.isEmpty(cars)}">
-        <p>Brak dostępnych samochodów.</p>
-      </div>
-      <div th:unless="${#lists.isEmpty(cars)}" class="row">
-        <div class="col-md-4 mb-4" th:each="car : ${cars}">
-          <div class="card h-100 car-card">
-            <div class="card-image-container">
-              <img th:src="${car.imageUrl()}" class="card-img-top img-fluid" alt="Obrazek samochodu" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
-
-              <div class="overlay">
-                <div class="overlay-content">
-                  <h5 th:text="${car.brand()} + ' ' + ${car.model()}"></h5>
-                  <p>
-                    <strong>Rocznik:</strong> <span th:text="${car.year()}"></span><br/>
-                    <strong>Moc:</strong> <span th:text="${car.power()}"></span> KM<br/>
-                    <strong>Pojemność silnika:</strong> <span th:text="${car.engineCapacity()}"></span> l<br/>
-                    <strong>Rodzaj paliwa:</strong> <span th:text="${car.fuelType()}"></span><br/>
-                    <strong>Skrzynia biegów:</strong> <span th:text="${car.transmission()}"></span><br/>
-                    <strong>Ilość miejsc:</strong> <span th:text="${car.seats()}"></span><br/>
-                    <strong>Cena za dzień:</strong> <span th:text="${car.pricePerDay()}"></span> PLN
-                  </p>
-                  <a th:href="@{'/cars/' + ${car.id()}}" class="btn btn-primary">Szczegóły</a>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div th:unless="${#lists.isEmpty(cars)}" class="row">
+    <div class="col-md-6 col-xl-4 mb-4" th:each="car : ${cars}">
+      <div class="card h-100 car-card">
+        <img th:src="${car.imageUrl()}" class="card-img-top" alt="Obrazek samochodu"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${car.brand()} + ' ' + ${car.model()}"></h5>
+          <p class="card-text">
+            <strong>Rocznik:</strong> <span th:text="${car.year()}"></span><br/>
+            <strong>Moc:</strong> <span th:text="${car.power()}"></span> KM<br/>
+            <strong>Rodzaj paliwa:</strong> <span th:text="${car.fuelType()}"></span><br/>
+            <strong>Cena za dzień:</strong> <span th:text="${car.pricePerDay()}"></span> PLN
+          </p>
+          <a th:href="@{'/cars/' + ${car.id()}}" class="btn btn-primary">Szczegóły</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Bootstrap JS and dependencies (Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/custom.js"></script>
 </body>

@@ -1,33 +1,93 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Szczegóły Samochodu</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>Szczegóły Samochodu - AutoRent</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pO3XVVk74xgK1u1kVj6+1wxNVFQeKj+jI9lI3qYBnOupg5qAeW9P1KQus93cG/4VYcP9klUaJPOmda+7I4n9bQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Opcjonalne własne style CSS -->
+  <link href="/css/custom.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 70px; /* Zapewnia, że nagłówek nie nachodzi na treść */
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
 <body>
-<h1>Szczegóły Samochodu</h1>
-<div th:if="${car != null}">
-  <p><b>Marka:</b> <span th:text="${car.brand()}"></span></p>
-  <p><b>Model:</b> <span th:text="${car.model()}"></span></p>
-  <p><b>Rok:</b> <span th:text="${car.year()}"></span></p>
-  <p><b>Moc:</b> <span th:text="${car.power()}"></span> KM</p>
-  <p><b>Pojemność silnika:</b> <span th:text="${car.engineCapacity()}"></span> l</p>
-  <p><b>Rodzaj paliwa:</b> <span th:text="${car.fuelType()}"></span></p>
-  <p><b>Skrzynia biegów:</b> <span th:text="${car.transmission()}"></span></p>
-  <p><b>Ilość miejsc:</b> <span th:text="${car.seats()}"></span></p>
-  <p><b>Cena za dzień:</b> <span th:text="${car.pricePerDay()}"></span> PLN</p>
+<!-- Inkluzja header.html jako fragment -->
+<div th:replace="~{fragments/header :: header}"></div>
 
-  <div th:if="${isAuthenticated}">
-    <div th:if="${role=='USER'}">
-      <h3>Wypożycz ten samochód</h3>
-      <form method="post" th:action="@{/rentals/rent}">
-        <input type="hidden" name="carId" th:value="${car.id()}"/>
-        Data od (YYYY-MM-DD): <input name="dateFrom"/><br/>
-        Data do (YYYY-MM-DD): <input name="dateTo"/><br/>
-        <button type="submit">Wypożycz</button>
-      </form>
+<div class="container mt-4">
+  <div th:if="${car != null}">
+    <div class="row">
+      <!-- Zdjęcie samochodu -->
+      <div class="col-md-6 mb-4">
+        <img th:src="${car.imageUrl}" alt="Zdjęcie Samochodu" class="img-fluid car-image"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/500x300?text=Brak+Zdjęcia';">
+      </div>
+      <!-- Szczegóły samochodu -->
+      <div class="col-md-6">
+        <div class="car-details">
+          <h2 th:text="${car.brand + ' ' + car.model}"></h2>
+          <hr>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Rok:</strong> <span th:text="${car.year}"></span></li>
+            <li class="list-group-item"><strong>Moc:</strong> <span th:text="${car.power}"></span> KM</li>
+            <li class="list-group-item"><strong>Pojemność silnika:</strong> <span th:text="${car.engineCapacity}"></span> l</li>
+            <li class="list-group-item"><strong>Rodzaj paliwa:</strong> <span th:text="${car.fuelType}"></span></li>
+            <li class="list-group-item"><strong>Skrzynia biegów:</strong> <span th:text="${car.transmission}"></span></li>
+            <li class="list-group-item"><strong>Ilość miejsc:</strong> <span th:text="${car.seats}"></span></li>
+            <li class="list-group-item"><strong>Cena za dzień:</strong> <span th:text="${car.pricePerDay}"></span> PLN</li>
+          </ul>
+        </div>
+
+        <!-- Formularz wypożyczenia dla zalogowanych użytkowników z rolą USER -->
+        <div th:if="${isAuthenticated}">
+          <div th:if="${role == 'USER'}">
+            <div class="rent-form">
+              <h3><i class="fas fa-car me-2"></i> Wypożycz ten samochód</h3>
+              <form method="post" th:action="@{/rentals/rent}">
+                <input type="hidden" name="carId" th:value="${car.id}"/>
+                <div class="mb-3">
+                  <label for="dateFrom" class="form-label">Data od (YYYY-MM-DD)</label>
+                  <input type="date" class="form-control" id="dateFrom" name="dateFrom" required>
+                </div>
+                <div class="mb-3">
+                  <label for="dateTo" class="form-label">Data do (YYYY-MM-DD)</label>
+                  <input type="date" class="form-control" id="dateTo" name="dateTo" required>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle me-2"></i> Wypożycz</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Link do logowania dla niezalogowanych użytkowników -->
+        <div th:if="${!isAuthenticated}">
+          <p class="mt-3">Aby wypożyczyć ten samochód, <a href="/login">zaloguj się</a>.</p>
+        </div>
+      </div>
     </div>
   </div>
-  <div th:if="${!isAuthenticated}">
-    <p><a href="/login">Zaloguj się</a> aby wypożyczyć.</p>
+  <!-- Obsługa przypadku, gdy samochód nie istnieje -->
+  <div th:if="${car == null}" class="alert alert-warning" role="alert">
+    Samochód nie został znaleziony.
   </div>
+  <!-- Wiadomości sukcesu lub błędu -->
+  <div th:if="${message != null}" class="mt-3 alert alert-success" th:text="${message}"></div>
+  <div th:if="${error != null}" class="mt-3 alert alert-danger" th:text="${error}"></div>
+  <!-- Link powrotny do strony głównej -->
+  <a href="/" class="back-link">← Powrót do Strony Głównej</a>
 </div>
+
+<!-- Bootstrap JS and dependencies (Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Opcjonalny plik JS dla dodatkowych funkcji -->
+<script src="/js/custom.js"></script>
 </body>
 </html>

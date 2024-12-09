@@ -12,16 +12,13 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String home(Model model) {
-        // Sprawdź czy użytkownik zalogowany
-        model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
-        model.addAttribute("username", UserSession.getInstance().getUsername());
-        model.addAttribute("role", UserSession.getInstance().getRole());
-
-        List<Car> cars = new CarController().getAllCars();
-        model.addAttribute("cars", cars);
-
-        return "index";
-    }
+//    @GetMapping("/")
+//    public String home(Model model) {
+//        // Sprawdź czy użytkownik zalogowany
+//        model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+//        model.addAttribute("username", UserSession.getInstance().getUsername());
+//        model.addAttribute("role", UserSession.getInstance().getRole());
+//
+//        return "index";
+//    }
 }
