@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class CarWebController {
                          @RequestParam(name = "seats") int seats,
                          @RequestParam(name = "pricePerDay") double pricePerDay,
                          @RequestParam(name = "imageUrl") MultipartFile imageUrl,
-                         Model modelAttr) {
+                         RedirectAttributes modelAttr) {
         modelAttr.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
         modelAttr.addAttribute("username", UserSession.getInstance().getUsername());
         // Sprawdzenie roli
@@ -132,9 +133,9 @@ public class CarWebController {
 
         Car car = new Car(0, brand, model, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay, image);
         if (carController.addCar(car)) {
-            modelAttr.addAttribute("message", "Samochód został dodany pomyślnie.");
+            modelAttr.addFlashAttribute("message", "Samochód został dodany pomyślnie.");
         } else {
-            modelAttr.addAttribute("error", "Nie udało się dodać samochodu.");
+            modelAttr.addFlashAttribute("error", "Nie udało się dodać samochodu.");
         }
         return "redirect:/";
     }

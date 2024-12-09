@@ -1,20 +1,56 @@
 body {
-    padding-top: 70px; /* Zapewnia, że nagłówek nie nachodzi na treść */
+    padding-top: 70px;
+    background-color: #f8f9fa;
 }
 
-
+/* Navbar styles */
 .navbar-nav .dropdown .dropdown-menu {
     margin-top: 0;
-}
-
-/* Opcjonalnie: Dodaj efekt przejścia */
-.navbar-nav .dropdown-menu {
     transition: all 0.3s ease;
 }
 
+/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    height: calc(100vh - 70px);
+    width: 300px;
+    background: #f8f9fa;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.filter-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.filter-buttons {
+    position: sticky;
+    bottom: 0;
+    background: #f8f9fa;
+    padding: 1rem 0;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Main content area */
+.main-content {
+    margin-left: 300px;
+    padding: 20px;
+}
+
+/* Car card styles - Index page */
 .car-card {
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card-image-container {
@@ -28,19 +64,13 @@ body {
     transition: transform 0.3s ease;
 }
 
-/* Powiększenie obrazka na hover */
-.car-card:hover .card-img-top {
-    transform: scale(1.1);
-}
-
-/* Nakładka pojawia się na hover */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     color: #fff;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -55,118 +85,61 @@ body {
     opacity: 1;
 }
 
-.overlay-content {
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
+.card-body {
+    padding-bottom: 60px;
 }
 
-.car-card:hover .overlay-content {
-    transform: translateY(0);
+/* Hoverable details on index page */
+.car-hover-details {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 15px 60px;
+    transition: bottom 0.3s ease;
+    border-top: 1px solid #eee;
 }
 
-.overlay h5 {
-    margin-bottom: 10px;
+.car-card:hover .car-hover-details {
+    bottom: 0;
 }
 
-.overlay p {
+.car-details-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.car-details-list li {
+    margin-bottom: 5px;
     font-size: 0.9rem;
 }
 
-.overlay .btn-primary {
-    margin-top: 10px;
+.btn-details {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    z-index: 10;
 }
 
-body {
-    background-color: #f8f9fa;
-}
-.login-container {
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.login-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-}
-.login-card h3 {
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-align: center;
-}
-.login-card .btn-primary {
-    width: 100%;
-}
-.login-card .form-label {
-    font-weight: 500;
-}
-.register-link {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    color: #6c757d;
-    text-decoration: none;
-}
-.register-link:hover {
-    color: #495057;
-    text-decoration: underline;
-}
-body {
-    background-color: #f8f9fa;
-}
-.add-car-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.add-car-card {
-    width: 100%;
-    max-width: 600px;
-    padding: 30px;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-}
-.add-car-card h3 {
-    margin-bottom: 25px;
-    font-weight: 600;
-    text-align: center;
-}
-.add-car-card .btn-success {
-    width: 100%;
-}
-.add-car-card .form-label {
-    font-weight: 500;
-}
-.back-link {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    color: #6c757d;
-    text-decoration: none;
-}
-.back-link:hover {
-    color: #495057;
-    text-decoration: underline;
-}
+/* Car details page specific styles */
 .car-details {
-    background-color: #ffffff;
+    background: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .car-image {
     max-height: 500px;
+    width: 100%;
     object-fit: cover;
     border-radius: 10px;
+    margin-bottom: 20px;
 }
+
 .rent-form {
     background-color: #ffffff;
     padding: 20px;
@@ -174,216 +147,177 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
 }
-.rent-form h3 {
-    margin-bottom: 20px;
-}
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #6c757d;
-    text-decoration: none;
-}
-.back-link:hover {
-    color: #495057;
-    text-decoration: underline;
-}
+
+/* Login and Register forms */
+.login-container,
 .register-container {
-    background-color: #ffffff; /* Białe tło formularza */
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card,
+.register-container {
+    background-color: #ffffff;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 500px;
     width: 100%;
 }
-.register-container h2 {
-    margin-bottom: 30px;
-    text-align: center;
-    font-weight: 700;
-}
-.register-container .btn {
-    width: 100%;
-}
-.register-container .form-control:focus {
-    box-shadow: none;
-    border-color: #198754; /* Kolor zielony po focusie */
-}
-.register-container .form-label {
-    font-weight: 500;
-}
+
+/* User panel styles */
 .user-panel-container {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
 }
-.user-info, .edit-form, .rentals-section {
-    background-color: #ffffff; /* Białe tło sekcji */
+
+.user-info,
+.edit-form,
+.rentals-section {
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
 }
-.rentals-section h3 {
+
+/* Rentals page styles */
+.rentals-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.rentals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
+
+.table-wrapper {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Common elements */
 .back-link {
     display: inline-block;
     margin-top: 20px;
-    color: #6c757d;
+    color: #007bff;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
+
 .back-link:hover {
-    color: #495057;
+    color: #0056b3;
     text-decoration: underline;
 }
-.rentals-container {
-    max-width: 1200px;
+
+.add-car-container {
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-}
-.rentals-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.rentals-header h2 {
-    margin: 0;
-}
-.rentals-header a {
-    text-decoration: none;
-}
-.table-wrapper {
-    background-color: #ffffff; /* Białe tło tabeli */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.alert-custom {
-    margin-bottom: 20px;
-}
-.rentals-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-.rentals-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.rentals-header h2 {
-    margin: 0;
-}
-.rentals-header a {
-    text-decoration: none;
-}
-.table-wrapper {
-    background-color: #ffffff; /* Białe tło tabeli */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.alert-custom {
-    margin-bottom: 20px;
-}
-.rentals-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-.rentals-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.rentals-header h2 {
-    margin: 0;
-}
-.rentals-header a {
-    text-decoration: none;
-}
-.table-wrapper {
-    background-color: #ffffff; /* Białe tło tabeli */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.alert-custom {
-    margin-bottom: 20px;
-}
-.filter-form {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-.filter-form {
+.add-car-card {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
 }
-.car-card {
-    position: relative;
-    overflow: hidden;
+
+.input-group-text i {
+    width: 45px;
+    text-align: center;
 }
-.overlay {
-    background: rgba(0,0,0,0.6);
-    opacity: 0;
-    transition: opacity 0.3s;
+
+.add-car-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.car-card:hover .overlay {
-    opacity: 1;
+
+.add-car-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-/* Stylizacja sidebar */
-@media (min-width: 768px) {
-    .filter-sidebar {
-        position: sticky;
-        top: 100px;
+
+.input-group-text i {
+    width: 45px;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.custom-file-input ~ .custom-file-label::after {
+    content: "Prześlij";
+}
+
+.custom-file-input:invalid ~ .custom-file-label::after {
+    content: "Wybierz plik";
+}
+
+.custom-file-label {
+    cursor: pointer;
+}
+
+.alert {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .add-car-container {
+        padding: 10px;
     }
 }
-.sidebar {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    height: 100vh;
-    width: 300px;
-    background: #f8f9fa;
-    padding: 20px;
-    overflow-y: auto;
-}
 
-.main-content {
-    margin-left: 300px;
-    padding: 20px;
-}
+@media (max-width: 576px) {
+    .add-car-card {
+        padding: 15px;
+    }
 
-.car-card {
-    transition: transform 0.2s;
-}
-
-.car-card:hover {
-    transform: translateY(-5px);
-}
-
-.filter-form .form-group {
-    margin-bottom: 1rem;
-}
-
-.filter-buttons {
-    position: sticky;
-    bottom: 0;
-    background: #f8f9fa;
-    padding: 1rem 0;
-    border-top: 1px solid #dee2e6;
+    .input-group-text i {
+        width: 40px;
+    }
 }

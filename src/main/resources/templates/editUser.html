@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj Dane - AutoRent</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/css/custom.css" rel="stylesheet">
+</head>
+<body>
+<!-- Inkluzja header.html jako fragment -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container edit-user-container">
+    <!-- Komunikaty sukcesu i błędów -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+
+    <!-- Sekcja Edycji Danych -->
+    <div class="edit-form">
+        <h3><i class="fas fa-edit me-2"></i>Edytuj Dane</h3>
+        <form method="post" th:action="@{/user-panel/update}" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="name" class="form-label"><i class="fas fa-user me-2"></i>Imię</label>
+                <input type="text" class="form-control" id="name" name="name" th:value="${name}" required>
+                <div class="invalid-feedback">
+                    Proszę wprowadzić swoje imię.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="surname" class="form-label"><i class="fas fa-user me-2"></i>Nazwisko</label>
+                <input type="text" class="form-control" id="surname" name="surname" th:value="${surname}" required>
+                <div class="invalid-feedback">
+                    Proszę wprowadzić swoje nazwisko.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
+                <input type="email" class="form-control" id="email" name="email" th:value="${email}" required>
+                <div class="invalid-feedback">
+                    Proszę wprowadzić poprawny adres email.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label"><i class="fas fa-phone me-2"></i>Numer telefonu</label>
+                <input type="tel" class="form-control" id="phone" name="phone" th:value="${phone}"
+                       pattern="[0-9]{9}" required>
+                <div class="form-text">Format: 123456789</div>
+                <div class="invalid-feedback">
+                    Proszę wprowadzić poprawny numer telefonu (9 cyfr).
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Zapisz</button>
+            <a href="/user-panel" class="btn btn-secondary ms-2">Anuluj</a>
+        </form>
+    </div>
+
+    <!-- Link powrotny do panelu użytkownika -->
+    <a href="/user-panel" class="back-link mt-3">← Powrót do Panelu Użytkownika</a>
+</div>
+
+<!-- Bootstrap JS and dependencies (Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Opcjonalny skrypt JavaScript dla walidacji formularzy Bootstrap -->
+<script src="/js/custom.js"></script>
+</body>
+</html>

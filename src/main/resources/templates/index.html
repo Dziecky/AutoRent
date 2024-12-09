@@ -47,7 +47,7 @@
         <option value="">Dowolny</option>
         <option value="Benzyna" th:selected="${param.fuelType == 'Benzyna'}">Benzyna</option>
         <option value="Diesel" th:selected="${param.fuelType == 'Diesel'}">Diesel</option>
-        <option value="Elektryk" th:selected="${param.fuelType == 'Elektryk'}">Elektryk</option>
+        <option value="Elektryczny" th:selected="${param.fuelType == 'elektryczny'}">Elektryk</option>
         <option value="Hybryda" th:selected="${param.fuelType == 'Hybryda'}">Hybryda</option>
       </select>
     </div>
@@ -74,6 +74,14 @@
 </div>
 
 <div class="main-content">
+  <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+  </div>
   <div class="jumbotron bg-light p-5 rounded mb-4">
     <h1 class="display-4">Witamy w Wypożyczalni Samochodów AutoRent</h1>
     <p class="lead">Oferujemy szeroki wybór samochodów na każdą okazję!</p>
@@ -92,11 +100,18 @@
           <h5 class="card-title" th:text="${car.brand()} + ' ' + ${car.model()}"></h5>
           <p class="card-text">
             <strong>Rocznik:</strong> <span th:text="${car.year()}"></span><br/>
-            <strong>Moc:</strong> <span th:text="${car.power()}"></span> KM<br/>
-            <strong>Rodzaj paliwa:</strong> <span th:text="${car.fuelType()}"></span><br/>
             <strong>Cena za dzień:</strong> <span th:text="${car.pricePerDay()}"></span> PLN
           </p>
-          <a th:href="@{'/cars/' + ${car.id()}}" class="btn btn-primary">Szczegóły</a>
+          <a th:href="@{'/cars/' + ${car.id()}}" class="btn btn-primary btn-details">Szczegóły</a>
+        </div>
+        <div class="car-hover-details">
+          <ul class="car-details-list">
+            <li><i class="fas fa-horse-head"></i> <strong>Moc:</strong> <span th:text="${car.power()}"></span> KM</li>
+            <li><i class="fas fa-cogs"></i> <strong>Pojemność silnika:</strong> <span th:text="${car.engineCapacity()}"></span> l</li>
+            <li><i class="fas fa-gas-pump"></i> <strong>Rodzaj paliwa:</strong> <span th:text="${car.fuelType()}"></span></li>
+            <li><i class="fas fa-gear"></i> <strong>Skrzynia biegów:</strong> <span th:text="${car.transmission()}"></span></li><!-- TODO dodać ikonkę skrzyni biegów -->
+            <li><i class="fas fa-users"></i> <strong>Liczba miejsc:</strong> <span th:text="${car.seats()}"></span></li>
+          </ul>
         </div>
       </div>
     </div>

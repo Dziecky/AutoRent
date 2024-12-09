@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -71,7 +72,23 @@ public class UserWebController {
         model.addAttribute("phone", userController.getUserPhone(username));
         model.addAttribute("currentRentals", currentRentals);
         model.addAttribute("pastRentals", userController.getUserPastRentals(username));
+        model.addAttribute("role", UserSession.getInstance().getRole());
         return "user-panel";
+    }
+
+    @GetMapping("/user-panel/update")
+    public String showUpdateUserDataForm(Model model) {
+        if (!UserSession.getInstance().isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String username = UserSession.getInstance().getUsername();
+        model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
+        model.addAttribute("username", username);
+        model.addAttribute("name", userController.getUserName(username));
+        model.addAttribute("surname", userController.getUserSurname(username));
+        model.addAttribute("email", userController.getUserEmail(username));
+        model.addAttribute("phone", userController.getUserPhone(username));
+        return "editUser";
     }
 
     @PostMapping("/user-panel/update")
@@ -79,14 +96,14 @@ public class UserWebController {
                                  @RequestParam(name = "surname") String surname,
                                  @RequestParam(name = "email") String email,
                                  @RequestParam(name = "phone") String phone,
-                                 Model model) {
+                                 RedirectAttributes model) {
         String username = UserSession.getInstance().getUsername();
         model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
         model.addAttribute("username", UserSession.getInstance().getUsername());
         if (userController.updateUser(username, name, surname, email, phone)) {
-            model.addAttribute("message", "Dane zaktualizowane pomyślnie");
+            model.addFlashAttribute("message", "Dane zaktualizowane pomyślnie");
         } else {
-            model.addAttribute("error", "Nie udało się zaktualizować danych");
+            model.addFlashAttribute("error", "Nie udało się zaktualizować danych");
         }
         return "redirect:/user-panel";
     }
