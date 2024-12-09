@@ -80,10 +80,67 @@
                   </button>
                   <span th:if="${!rental.canBeCancelled}" class="text-muted">Nie można anulować</span>
                 </form>
+                <button type="button" class="btn btn-info btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#rentalDetailModal"
+                        th:data-car-brand="${rental.car.brand}"
+                        th:data-car-model="${rental.car.model}"
+                        th:data-car-year="${rental.car.year}"
+                        th:data-car-power="${rental.car.power}"
+                        th:data-car-engine-capacity="${rental.car.engineCapacity}"
+                        th:data-car-fuel-type="${rental.car.fuelType}"
+                        th:data-car-transmission="${rental.car.transmission}"
+                        th:data-car-seats="${rental.car.seats}"
+                        th:data-car-price-per-day="${rental.car.pricePerDay}"
+                        th:data-rental-date="${#temporals.format(rental.rentalDate, 'dd-MM-yyyy')}"
+                        th:data-return-date="${#temporals.format(rental.returnDate, 'dd-MM-yyyy')}"
+                        th:data-days-between="${rental.daysBetween}"
+                        th:data-total-price="${rental.totalPrice}"
+                        th:data-rental-id="${rental.id}">
+                  <i class="fas fa-eye me-1"></i>Szczegóły
+                </button>
               </td>
             </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal ze szczegółami wypożyczenia -->
+    <div class="modal fade" id="rentalDetailModal" tabindex="-1" aria-labelledby="rentalDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rentalDetailModalLabel">Szczegóły Wypożyczenia</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <!-- Kolumna z danymi samochodu -->
+              <div class="col-md-6">
+                <h4>Samochód</h4>
+                <p><strong>Marka:</strong> <span id="modalCarBrand"></span></p>
+                <p><strong>Model:</strong> <span id="modalCarModel"></span></p>
+                <p><strong>Rocznik:</strong> <span id="modalCarYear"></span></p>
+                <p><strong>Moc:</strong> <span id="modalCarPower"></span> KM</p>
+                <p><strong>Pojemność silnika:</strong> <span id="modalCarEngineCapacity"></span> L</p>
+                <p><strong>Rodzaj paliwa:</strong> <span id="modalCarFuelType"></span></p>
+                <p><strong>Skrzynia biegów:</strong> <span id="modalCarTransmission"></span></p>
+                <p><strong>Liczba miejsc:</strong> <span id="modalCarSeats"></span></p>
+                <p><strong>Cena za dzień:</strong> <span id="modalCarPricePerDay"></span> PLN</p>
+              </div>
+
+              <!-- Kolumna ze szczegółami wypożyczenia -->
+              <div class="col-md-6">
+                <h4>Szczegóły Wypożyczenia</h4>
+                <p><strong>Data wypożyczenia:</strong> <span id="modalRentalDate"></span></p>
+                <p><strong>Data zwrotu:</strong> <span id="modalReturnDate"></span></p>
+                <p><strong>Liczba dni:</strong> <span id="modalDaysBetween"></span></p>
+                <p><strong>Cena całkowita:</strong> <span id="modalTotalPrice"></span> PLN</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -127,5 +184,60 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Opcjonalny skrypt JavaScript dla walidacji formularzy Bootstrap -->
 <script src="/js/custom.js"></script>
+<script>
+  // JavaScript do obsługi populowania modalu ze szczegółami wypożyczenia
+  document.addEventListener('DOMContentLoaded', function () {
+    var rentalDetailModal = document.getElementById('rentalDetailModal');
+    rentalDetailModal.addEventListener('show.bs.modal', function (event) {
+      // Button that triggered the modal
+      var button = event.relatedTarget;
+
+      // Extract info from data-* attributes
+      var carBrand = button.getAttribute('data-car-brand');
+      var carModel = button.getAttribute('data-car-model');
+      var carYear = button.getAttribute('data-car-year');
+      var carPower = button.getAttribute('data-car-power');
+      var carEngineCapacity = button.getAttribute('data-car-engine-capacity');
+      var carFuelType = button.getAttribute('data-car-fuel-type');
+      var carTransmission = button.getAttribute('data-car-transmission');
+      var carSeats = button.getAttribute('data-car-seats');
+      var carPricePerDay = button.getAttribute('data-car-price-per-day');
+      var rentalDate = button.getAttribute('data-rental-date');
+      var returnDate = button.getAttribute('data-return-date');
+      var daysBetween = button.getAttribute('data-days-between');
+      var totalPrice = button.getAttribute('data-total-price');
+      var rentalId = button.getAttribute('data-rental-id');
+
+      // Update the modal's content.
+      var modalCarBrand = rentalDetailModal.querySelector('#modalCarBrand');
+      var modalCarModel = rentalDetailModal.querySelector('#modalCarModel');
+      var modalCarYear = rentalDetailModal.querySelector('#modalCarYear');
+      var modalCarPower = rentalDetailModal.querySelector('#modalCarPower');
+      var modalCarEngineCapacity = rentalDetailModal.querySelector('#modalCarEngineCapacity');
+      var modalCarFuelType = rentalDetailModal.querySelector('#modalCarFuelType');
+      var modalCarTransmission = rentalDetailModal.querySelector('#modalCarTransmission');
+      var modalCarSeats = rentalDetailModal.querySelector('#modalCarSeats');
+      var modalCarPricePerDay = rentalDetailModal.querySelector('#modalCarPricePerDay');
+      var modalRentalDate = rentalDetailModal.querySelector('#modalRentalDate');
+      var modalReturnDate = rentalDetailModal.querySelector('#modalReturnDate');
+      var modalDaysBetween = rentalDetailModal.querySelector('#modalDaysBetween');
+      var modalTotalPrice = rentalDetailModal.querySelector('#modalTotalPrice');
+
+      modalCarBrand.textContent = carBrand;
+      modalCarModel.textContent = carModel;
+      modalCarYear.textContent = carYear;
+      modalCarPower.textContent = carPower;
+      modalCarEngineCapacity.textContent = carEngineCapacity;
+      modalCarFuelType.textContent = carFuelType;
+      modalCarTransmission.textContent = carTransmission;
+      modalCarSeats.textContent = carSeats;
+      modalCarPricePerDay.textContent = carPricePerDay;
+      modalRentalDate.textContent = rentalDate;
+      modalReturnDate.textContent = returnDate;
+      modalDaysBetween.textContent = daysBetween;
+      modalTotalPrice.textContent = totalPrice;
+    });
+  });
+</script>
 </body>
 </html>

@@ -59,9 +59,13 @@ public class UserWebController {
             return "redirect:/login";
         }
         String username = UserSession.getInstance().getUsername();
+        int daysBetween;
         List<Rental> currentRentals = userController.getUserCurrentRentals(username);
         for (Rental rental :currentRentals){
             rental.setCanBeCancelled(LocalDate.now());
+            daysBetween = (int) java.time.temporal.ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate()) + 1;
+            rental.setDaysBetween(daysBetween);
+            rental.setTotalPrice(rental.getCar().pricePerDay() * rental.getDaysBetween());
         }
 
         model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());

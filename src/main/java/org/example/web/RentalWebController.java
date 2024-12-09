@@ -3,6 +3,7 @@ package org.example.web;
 import org.example.controllers.RentalController;
 import org.example.controllers.UserController;
 import org.example.models.Rental;
+import org.example.services.RentalService;
 import org.example.sessions.UserSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,7 +46,12 @@ public class RentalWebController {
         } else if (rentalController.rentCar(carId, userId, from, to)) {
             redirectAttributes.addFlashAttribute("message", "Samochód został pomyślnie wypożyczony!");
         } else {
-            redirectAttributes.addFlashAttribute("error", "Samochód jest niedostępny w wybranym terminie.");
+            StringBuilder message = new StringBuilder("Zajęte terminy:<br>");
+                            for (Rental rental : RentalService.getConflictingRentals(carId, from, to)) {
+                                message.append("- Od: ").append(rental.getRentalDate())
+                                        .append(" Do: ").append(rental.getReturnDate()).append("<br>");
+                            }
+            redirectAttributes.addFlashAttribute("error", "Samochód jest niedostępny w wybranym terminie.<br>" + message);
             return "redirect:/cars/" + carId;
         }
         return "redirect:/user-panel";

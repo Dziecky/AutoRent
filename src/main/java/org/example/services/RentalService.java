@@ -64,7 +64,7 @@ public class RentalService {
         return rentals;
     }
 
-    public List<Rental> getConflictingRentals(int carId, LocalDate dateFrom, LocalDate dateTo) {
+    public static List<Rental> getConflictingRentals(int carId, LocalDate dateFrom, LocalDate dateTo) {
         List<Rental> conflictingRentals = new ArrayList<>();
         String query = "SELECT * FROM Wypozyczenie WHERE samochod_id = ? AND status != 'ANULOWANE' AND " +
                 "((? <= data_zwrotu) AND (? >= data_wypozyczenia))";

@@ -70,7 +70,7 @@
   </div>
   <!-- Wiadomości sukcesu lub błędu -->
   <div th:if="${message != null}" class="mt-3 alert alert-success" th:text="${message}"></div>
-  <div th:if="${error != null}" class="mt-3 alert alert-danger" th:text="${error}"></div>
+  <div th:if="${error != null}" class="mt-3 alert alert-danger" th:utext="${error}"></div>
   <!-- Link powrotny do strony głównej -->
   <a href="/" class="back-link">← Powrót do Strony Głównej</a>
 </div>
