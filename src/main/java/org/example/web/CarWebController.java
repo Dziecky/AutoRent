@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Controller
@@ -77,7 +83,37 @@ public class CarWebController {
             return "redirect:/";
         }
 
-        String image = "/images/" + imageUrl.getOriginalFilename();
+        String image = "";
+
+        if (!imageUrl.isEmpty()) {
+            try {
+                String contentType = imageUrl.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    modelAttr.addAttribute("error", "Plik musi być obrazem.");
+                    return "redirect:/cars";
+                }
+                if (imageUrl.getSize() > 5 * 1024 * 1024) {
+                    modelAttr.addAttribute("error", "Plik nie może być większy niż 5MB.");
+                    return "redirect:/cars";
+                }
+
+                String fileName = java.util.UUID.randomUUID() + "_" + Paths.get(imageUrl.getOriginalFilename()).getFileName().toString();
+                Path path = Paths.get("/Users/kprze/autorent/images" + File.separator + fileName);
+
+                Files.createDirectories(path.getParent());
+                Files.copy(imageUrl.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                image = "/images/" + fileName;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                modelAttr.addAttribute("error", "Nie udało się przesłać zdjęcia.");
+                return "redirect:/cars";
+            }
+        } else {
+            modelAttr.addAttribute("error", "Nie wybrano zdjęcia.");
+            return "redirect:/cars";
+        }
 
         Car car = new Car(0, brand, model, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay, image);
         if (carController.addCar(car)) {
