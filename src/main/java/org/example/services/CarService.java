@@ -10,11 +10,14 @@ import java.util.List;
 
 public class CarService {
 
+    // Metoda do pobierania wszystkich samochodów
     public List<Car> getAllCars() {
         return getFilteredCars(null, null, null, null, null, null, null, null);
     }
 
-    public List<Car> getFilteredCars(String brand, String model, String yearFromStr, String yearToStr, String transmission, String fuelType, String dateFromStr, String dateToStr) {
+    // Metoda do filtrowania samochodów
+    public List<Car> getFilteredCars(String brand, String model, String yearFromStr, String yearToStr,
+                                     String transmission, String fuelType, String dateFromStr, String dateToStr) {
         List<Car> cars = new ArrayList<>();
         StringBuilder query = new StringBuilder("SELECT * FROM Samochod WHERE 1=1");
         List<Object> parameters = new ArrayList<>();
@@ -68,8 +71,9 @@ public class CarService {
         return cars;
     }
 
+    // Metoda do dodawania nowego samochodu
     public boolean addCar(Car car) {
-        String query = "INSERT INTO Samochod (marka, model, rocznik, moc, pojemnosc_silnika, rodzaj_paliwa, skrzynia_biegow, ilosc_miejsc, cena_za_dzien) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Samochod (marka, model, rocznik, moc, pojemnosc_silnika, rodzaj_paliwa, skrzynia_biegow, ilosc_miejsc, cena_za_dzien, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -82,6 +86,7 @@ public class CarService {
             preparedStatement.setString(7, car.transmission());
             preparedStatement.setInt(8, car.seats());
             preparedStatement.setDouble(9, car.pricePerDay());
+            preparedStatement.setString(10, car.imageUrl());
 
             int rowsInserted = preparedStatement.executeUpdate();
             return rowsInserted > 0;
@@ -92,6 +97,7 @@ public class CarService {
         return false;
     }
 
+    // Metoda do tworzenia listy samochodów z ResultSet
     private void createCarList(List<Car> cars, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
@@ -104,8 +110,9 @@ public class CarService {
             String transmission = resultSet.getString("skrzynia_biegow");
             int seats = resultSet.getInt("ilosc_miejsc");
             double pricePerDay = resultSet.getDouble("cena_za_dzien");
+            String imageUrl = resultSet.getString("image_url"); // Poprawka: używamy "image_url" zamiast "zdjecie"
 
-            cars.add(new Car(id, carBrand, carModel, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay));
+            cars.add(new Car(id, carBrand, carModel, year, power, engineCapacity, fuelType, transmission, seats, pricePerDay, imageUrl));
         }
     }
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Szczegóły Samochodu</title></head>
+<body>
+<h1>Szczegóły Samochodu</h1>
+<div th:if="${car != null}">
+  <p><b>Marka:</b> <span th:text="${car.brand()}"></span></p>
+  <p><b>Model:</b> <span th:text="${car.model()}"></span></p>
+  <p><b>Rok:</b> <span th:text="${car.year()}"></span></p>
+  <p><b>Moc:</b> <span th:text="${car.power()}"></span> KM</p>
+  <p><b>Pojemność silnika:</b> <span th:text="${car.engineCapacity()}"></span> l</p>
+  <p><b>Rodzaj paliwa:</b> <span th:text="${car.fuelType()}"></span></p>
+  <p><b>Skrzynia biegów:</b> <span th:text="${car.transmission()}"></span></p>
+  <p><b>Ilość miejsc:</b> <span th:text="${car.seats()}"></span></p>
+  <p><b>Cena za dzień:</b> <span th:text="${car.pricePerDay()}"></span> PLN</p>
+
+  <div th:if="${isAuthenticated}">
+    <div th:if="${role=='USER'}">
+      <h3>Wypożycz ten samochód</h3>
+      <form method="post" th:action="@{/rentals/rent}">
+        <input type="hidden" name="carId" th:value="${car.id()}"/>
+        Data od (YYYY-MM-DD): <input name="dateFrom"/><br/>
+        Data do (YYYY-MM-DD): <input name="dateTo"/><br/>
+        <button type="submit">Wypożycz</button>
+      </form>
+    </div>
+  </div>
+  <div th:if="${!isAuthenticated}">
+    <p><a href="/login">Zaloguj się</a> aby wypożyczyć.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -40,7 +40,8 @@ public class RentalService {
                         resultSet.getString("rodzaj_paliwa"),
                         resultSet.getString("skrzynia_biegow"),
                         resultSet.getInt("ilosc_miejsc"),
-                        resultSet.getDouble("cena_za_dzien")
+                        resultSet.getDouble("cena_za_dzien"),
+                        resultSet.getString("zdjecie")
                 );
 
                 // Pobieranie danych użytkownika

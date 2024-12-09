@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Wypożyczenia</title></head>
+<body>
+<h1>Wypożyczenia</h1>
+<div th:if="${#lists.isEmpty(rentals)}">
+  Brak wypożyczeń.
+</div>
+<div th:if="${!#lists.isEmpty(rentals)}">
+  <ul>
+    <li th:each="rental : ${rentals}">
+      <b>Samochód:</b> <span th:text="${rental.car.brand()}"></span> <span th:text="${rental.car.model()}"></span>,
+      <b>Użytkownik:</b> <span th:text="${rental.user.login}"></span><br/>
+      Od: <span th:text="${rental.rentalDate}"></span> do <span th:text="${rental.returnDate}"></span><br/>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

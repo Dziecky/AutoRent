@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Samochody</title></head>
+<body>
+<h1>Dostępne Samochody</h1>
+<form method="get" action="/cars">
+  Marka: <input name="brand"/><br/>
+  Model: <input name="model"/><br/>
+  Rok od: <input name="yearFrom" type="number"/> do <input name="yearTo" type="number"/><br/>
+  Skrzynia biegów: <input name="transmission"/><br/>
+  Rodzaj paliwa: <input name="fuelType"/><br/>
+  Data od (YYYY-MM-DD): <input name="dateFrom" type="text"/><br/>
+  Data do (YYYY-MM-DD): <input name="dateTo" type="text"/><br/>
+  <button type="submit">Filtruj</button>
+</form>
+<hr/>
+<div th:if="${#lists.isEmpty(cars)}">
+  Brak dostępnych samochodów.
+</div>
+<div th:if="${!#lists.isEmpty(cars)}">
+  <ul>
+    <li th:each="car : ${cars}">
+      <a th:href="@{'/cars/' + ${car.id()}}"
+         th:text="${car.brand()} + ' ' + ${car.model()} + ' (' + ${car.year()} + ') - ' + ${car.pricePerDay()} + ' PLN/dzień'"></a>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

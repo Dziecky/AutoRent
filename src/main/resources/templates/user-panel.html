@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Panel Użytkownika</title></head>
+<body>
+<h1>Panel Użytkownika</h1>
+<p><b>Login:</b> <span th:text="${username}"></span></p>
+<p><b>Imię:</b> <span th:text="${name}"></span></p>
+<p><b>Nazwisko:</b> <span th:text="${surname}"></span></p>
+<p><b>Email:</b> <span th:text="${email}"></span></p>
+<p><b>Numer telefonu:</b> <span th:text="${phone}"></span></p>
+
+<h3>Edytuj dane</h3>
+<form method="post" action="/user-panel/update">
+  Imię: <input name="name" th:value="${name}"/><br/>
+  Nazwisko: <input name="surname" th:value="${surname}"/><br/>
+  Email: <input name="email" th:value="${email}"/><br/>
+  Numer telefonu: <input name="phone" th:value="${phone}"/><br/>
+  <button type="submit">Zapisz</button>
+</form>
+<div th:if="${message}">
+  <p style="color:green;" th:text="${message}"></p>
+</div>
+<div th:if="${error}">
+  <p style="color:red;" th:text="${error}"></p>
+</div>
+
+<h3>Twoje aktualne wypożyczenia</h3>
+<div th:if="${#lists.isEmpty(currentRentals)}">Brak aktualnie wypożyczonych samochodów.</div>
+<div th:if="${!#lists.isEmpty(currentRentals)}">
+  <ul>
+    <li th:each="rental : ${currentRentals}">
+      <p><b>Samochód:</b> <span th:text="${rental.car.brand()}"></span> <span th:text="${rental.car.model()}"></span><br/>
+        Od: <span th:text="${rental.rentalDate}"></span> do <span th:text="${rental.returnDate}"></span></p>
+      <form method="post" action="/rentals/cancel">
+        <input type="hidden" name="rentalId" th:value="${rental.id}"/>
+        <button type="submit">Anuluj wypożyczenie (jeśli to dozwolone)</button>
+      </form>
+    </li>
+  </ul>
+</div>
+
+<h3>Historia wypożyczeń</h3>
+<div th:if="${#lists.isEmpty(pastRentals)}">Brak zakończonych wypożyczeń.</div>
+<div th:if="${!#lists.isEmpty(pastRentals)}">
+  <ul>
+    <li th:each="rental : ${pastRentals}">
+      <p><b>Samochód:</b> <span th:text="${rental.car.brand()}"></span> <span th:text="${rental.car.model()}"></span><br/>
+        Od: <span th:text="${rental.rentalDate}"></span> do <span th:text="${rental.returnDate}"></span></p>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

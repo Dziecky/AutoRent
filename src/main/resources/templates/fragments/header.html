@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <!-- Meta tagi i Bootstrap CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoRent Header</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Opcjonalne własne style CSS -->
+  <style>
+    body {
+      padding-top: 70px; /* Zapewnia, że nagłówek nie nachodzi na treść */
+    }
+  </style>
+</head>
+<body>
+<!-- Fragment nagłówka -->
+<!-- Fragment nagłówka -->
+<!-- src/main/resources/templates/fragments/header.html -->
+<div th:fragment="header">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <!-- Nazwa aplikacji -->
+      <a class="navbar-brand" href="/">AutoRent</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Elementy nawigacji -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <!-- Jeśli użytkownik jest zalogowany -->
+          <li class="nav-item dropdown" th:if="${isAuthenticated}">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+              <span th:text="${username}">Username</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/user-panel"><i class="fas fa-user-circle me-2"></i> Panel Użytkownika</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Wyloguj się</a></li>
+            </ul>
+          </li>
+          <!-- Jeśli użytkownik nie jest zalogowany -->
+          <li class="nav-item" th:unless="${isAuthenticated}">
+            <a class="nav-link" href="/login">Zaloguj się</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+
+
+<!-- Bootstrap JS and dependencies (Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
