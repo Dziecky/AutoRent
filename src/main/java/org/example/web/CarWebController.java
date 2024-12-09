@@ -74,6 +74,7 @@ public class CarWebController {
     public String showAddCarForm(Model model) {
         model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
         model.addAttribute("username", UserSession.getInstance().getUsername());
+        model.addAttribute("role", UserSession.getInstance().getRole());
         if (!UserSession.getInstance().isAuthenticated() || !"OWNER".equals(UserSession.getInstance().getRole())) {
             return "redirect:/";
         }

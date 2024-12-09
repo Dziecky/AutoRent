@@ -65,6 +65,7 @@ public class RentalWebController {
         }
         model.addAttribute("isAuthenticated", UserSession.getInstance().isAuthenticated());
         model.addAttribute("username", UserSession.getInstance().getUsername());
+        model.addAttribute("role", UserSession.getInstance().getRole());
         model.addAttribute("rentals", rentals);
         return "rentals";
     }
